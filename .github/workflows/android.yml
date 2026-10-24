@@ -7,6 +7,8 @@ name: Android build
 on:
   push:
     branches: [main]
+    # Docs and test-script changes don't need a new 30-minute Android build.
+    paths-ignore: ['docs/**', '**.md', '.github/scripts/**', '.github/workflows/smoke.yml', '.github/workflows/pages.yml', '.github/workflows/ci.yml']
   workflow_dispatch:
 
 jobs:

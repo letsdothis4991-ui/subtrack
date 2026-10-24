@@ -63,12 +63,17 @@ step() { # name [wait]: screenshot + liveness
 step 01-launch 20
 tap_text "Explore with sample data"; step 02-sample
 
-# Swipe right on a row: it should move to Past.
+# Swipe right on a row: it should move to Past. On the small emulator screen the rows start
+# under the ad banner, so scroll the list up first and only swipe a row that's clearly visible.
+adb shell input swipe 160 420 160 120 400; sleep 1.5
 b=$(bounds "Gym membership")
+if [ -n "$b" ]; then set -- $b; [ $(( ($2 + $4) / 2 )) -gt 430 ] && { adb shell input swipe 160 420 160 250 400; sleep 1.5; b=$(bounds "Gym membership"); }; fi
+log "gym row bounds: ${b:-none}"
 if [ -n "$b" ]; then
   set -- $b; y=$(( ($2 + $4) / 2 ))
   adb shell input swipe 70 $y 300 $y 400
   sleep 2
+  adb shell input swipe 160 150 160 600 300; sleep 1.5   # scroll back to the top to read the tab counts
   if has_text 'Past · 3'; then log "swipe-archive: OK (Past · 3)"; else log "swipe-archive: FAILED (Past count unchanged)"; fi
 else
   log "swipe-archive: row not found"
