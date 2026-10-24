@@ -9,6 +9,11 @@
 6. ✅ Price-rise alerts and annual-plan savings tips
 7. ✅ Settle-up for shared plans
 
+## Shipped in v1.2
+- ✅ Swipe to archive/delete with Undo, category filter chips
+- ✅ Plus perks: renewal calendar, year in review, colour themes, widget styles
+- ✅ In-app rating prompt
+
 ## Next up
 8. **Reminders on the web**: make the site an installable PWA with web push, or send email reminders from Supabase (scheduled function). *M*
 9. **More Plus perks** so the upgrade is worth more than "no ads": e.g. extra widget styles, custom themes, unlimited categories, or PDF/annual reports. *S–M*

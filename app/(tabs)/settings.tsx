@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Linking, Platform, Switch, View } from 'react-native';
+import { Linking, Platform, Pressable, Switch, View } from 'react-native';
 import { CurrencyField } from '../../src/components/pickers';
 import { Card, Chip, Row, Screen, Section, T, confirm, notify } from '../../src/components/ui';
 import { makeBackup, parseBackup, toCSV } from '../../src/lib/backup';
@@ -12,7 +12,8 @@ import { ensurePermission, notificationsSupported, sendTestReminder } from '../.
 import { cloudEnabled } from '../../src/services/supabase';
 import { AccountSection, PlusSection } from '../../src/components/account';
 import { useStore } from '../../src/store';
-import { space, useTheme } from '../../src/theme';
+import { ACCENTS, FREE_ACCENT, space, useTheme, type AccentId } from '../../src/theme';
+import { PlusTag } from '../../src/components/PlusGate';
 
 const PRIVACY_URL = process.env.EXPO_PUBLIC_PRIVACY_URL || 'https://letsdothis4991-ui.github.io/subtrack/privacy.html';
 
@@ -166,6 +167,62 @@ export default function SettingsScreen() {
                 <Chip key={p} label={p[0].toUpperCase() + p.slice(1)} selected={settings.theme === p} onPress={() => updateSettings({ theme: p })} />
               ))}
             </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginTop: space.sm }}>
+              <T v="small" muted>
+                Colour
+              </T>
+              {!settings.plus ? <PlusTag /> : null}
+            </View>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+              {(Object.keys(ACCENTS) as AccentId[]).map((id) => {
+                const locked = !settings.plus && id !== FREE_ACCENT;
+                const selected = (settings.plus ? settings.accent : FREE_ACCENT) === id;
+                return (
+                  <Pressable
+                    key={id}
+                    accessibilityLabel={`${ACCENTS[id].name}${locked ? ' (Plus)' : ''}`}
+                    onPress={() => (locked ? notify('SubTrack Plus', 'Colour themes come with SubTrack Plus.') : updateSettings({ accent: id }))}
+                    style={{ alignItems: 'center', gap: 4, opacity: locked ? 0.45 : 1 }}
+                  >
+                    <View
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: 17,
+                        backgroundColor: t.dark ? ACCENTS[id].dark : ACCENTS[id].light,
+                        borderWidth: selected ? 3 : 0,
+                        borderColor: t.text,
+                      }}
+                    />
+                    <T v="small" faint style={{ fontSize: 11 }}>
+                      {ACCENTS[id].name}
+                    </T>
+                  </Pressable>
+                );
+              })}
+            </View>
+            {Platform.OS === 'android' ? (
+              <>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginTop: space.sm }}>
+                  <T v="small" muted>
+                    Home-screen widget
+                  </T>
+                  {!settings.plus ? <PlusTag /> : null}
+                </View>
+                <View style={{ flexDirection: 'row', gap: space.sm }}>
+                  {(['light', 'dark', 'accent'] as const).map((w) => (
+                    <Chip
+                      key={w}
+                      label={w === 'accent' ? 'Colour' : w[0].toUpperCase() + w.slice(1)}
+                      selected={(settings.plus ? settings.widgetStyle : 'light') === w}
+                      onPress={() =>
+                        !settings.plus && w !== 'light' ? notify('SubTrack Plus', 'Widget styles come with SubTrack Plus.') : updateSettings({ widgetStyle: w })
+                      }
+                    />
+                  ))}
+                </View>
+              </>
+            ) : null}
           </View>
         </Card>
       </Section>

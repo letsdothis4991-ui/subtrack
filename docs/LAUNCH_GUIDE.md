@@ -76,7 +76,7 @@ Play Console → **Create app** → name "SubTrack – Subscription Tracker", de
 Needs the uploaded build from step 9 (it declares billing).
 1. Set up a **payments profile** if prompted (**Settings → Payments profile**).
 2. **Monetise with Play → Products → In-app products → Create product**.
-3. Product ID **`subtrack_plus`** (must match exactly), name "SubTrack Plus", description "Remove ads, forever." Set a price (suggestion: $4.99; it's one-off). **Save → Activate**.
+3. Product ID **`subtrack_plus`** (must match exactly), name "SubTrack Plus", description "No ads, renewal calendar, year in review, colour themes and widget styles. One payment, forever." Set a price (suggestion: $4.99; it's one-off). **Save → Activate**.
 4. To test purchases without paying: **Settings → License testing** → add your Gmail.
 
 ### 11. Store listing

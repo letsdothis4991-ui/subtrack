@@ -22,7 +22,9 @@ A minimalist subscription tracker for Android and the web, built from one Expo /
 - **Home-screen widget** (Android): monthly total and next three renewals
 - **Settle-up** for plans you pay for: tick off who has paid for each renewal, see what's owed, and send a reminder through the share sheet
 - **Data**: works fully offline without an account; JSON backup/restore and CSV export
-- **SubTrack Plus**: a one-off purchase that removes ads. Free users see one anchored AdMob banner (Subscriptions and Insights tabs only) with GDPR/US consent. No ads on the web
+- **Swipe** right to archive (or restore), left to delete, with Undo; **category filter** chips on the list
+- **Rating prompt**: Google Play's in-app review sheet after a positive moment (at most every 4 months)
+- **SubTrack Plus**: a one-off purchase that removes ads and unlocks the **renewal calendar**, **year in review** (shareable), **colour themes** and **widget styles**. Free users see one anchored AdMob banner (Subscriptions and Insights tabs only) with GDPR/US consent. No ads on the web
 
 ## Run it
 

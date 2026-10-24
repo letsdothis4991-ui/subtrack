@@ -22,6 +22,8 @@ interface State {
   addSubscription: (input: SubscriptionInput) => string;
   updateSubscription: (id: string, input: SubscriptionInput) => void;
   deleteSubscription: (id: string) => void;
+  /** Puts back a subscription removed by deleteSubscription (for Undo). */
+  undoDelete: (sub: Subscription) => void;
   cancelSubscription: (id: string, endDate: string) => void;
   restoreSubscription: (id: string) => void;
 
@@ -53,6 +55,8 @@ export const DEFAULT_SETTINGS: Settings = {
   plus: false,
   lastCheckIn: null,
   countMyShareOnly: true,
+  accent: 'forest',
+  widgetStyle: 'light',
 };
 
 function guessCurrency(): string {
@@ -120,6 +124,14 @@ export const useStore = create<State>()(
 
       deleteSubscription: (id) =>
         set((s) => ({ subscriptions: s.subscriptions.filter((x) => x.id !== id), deleted: { ...s.deleted, [id]: now() } })),
+
+      undoDelete: (sub) =>
+        set((s) => {
+          const deleted = { ...s.deleted };
+          delete deleted[sub.id];
+          // Re-stamp so the restored copy beats the tombstone if it already synced.
+          return { subscriptions: [...s.subscriptions.filter((x) => x.id !== sub.id), { ...sub, updatedAt: now() }], deleted };
+        }),
 
       cancelSubscription: (id, endDate) => set((s) => ({ subscriptions: patchSub(s.subscriptions, id, () => ({ endDate })) })),
 

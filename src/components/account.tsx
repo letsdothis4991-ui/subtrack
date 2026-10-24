@@ -106,6 +106,9 @@ export function PlusSection() {
         </View>
         {[
           'No ads, anywhere in the app',
+          'Renewal calendar: see which days money leaves',
+          'Year in review: your spending by month and category, ready to share',
+          'Colour themes and home-screen widget styles',
           'Supports an independent, private app',
         ].map((line) => (
           <View key={line} style={{ flexDirection: 'row', gap: space.sm }}>

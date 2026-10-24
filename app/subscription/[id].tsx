@@ -11,6 +11,7 @@ import { useCostOf } from '../../src/hooks';
 import { convert, formatMoney } from '../../src/lib/currency';
 import { daysBetween, formatDate, relativeDays, today } from '../../src/lib/dates';
 import { categoryOf, useStore } from '../../src/store';
+import { maybeAskForReview } from '../../src/services/review';
 import { logoOf } from '../../src/lib/logo';
 import { space, useTheme } from '../../src/theme';
 
@@ -213,6 +214,7 @@ export default function SubscriptionDetail() {
         onClose={() => setCancelling(false)}
         onConfirm={(d) => {
           cancelSubscription(sub.id, d);
+          maybeAskForReview();
           setCancelling(false);
         }}
       />

@@ -10,6 +10,7 @@ import { annualSaving, cancelReason, outstanding, recentPriceChanges } from '../
 import { addDays, formatDate, today } from '../../src/lib/dates';
 import { AdBanner } from '../../src/services/ads';
 import { categoryOf } from '../../src/store';
+import { PlusTag } from '../../src/components/PlusGate';
 import { logoOf } from '../../src/lib/logo';
 import { shareSummary } from '../../src/lib/share';
 import { space, useTheme } from '../../src/theme';
@@ -82,6 +83,27 @@ export default function InsightsScreen() {
         <Stat label="Active" value={String(o.active.length)} />
         <Stat label={`Avg / sub`} value={formatMoney(o.active.length ? total / o.active.length : 0, o.base, { compact: true })} />
         <Stat label="Daily" value={formatMoney(o.monthly / 30.44, o.base)} />
+      </View>
+
+      <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.lg }}>
+        <Card onPress={() => router.push('/year')} style={{ flex: 1, padding: space.md, gap: 2 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <T v="bodyStrong">Year in review</T>
+            {!o.settings.plus ? <PlusTag /> : null}
+          </View>
+          <T v="small" muted>
+            Your {today().slice(0, 4)} so far
+          </T>
+        </Card>
+        <Card onPress={() => router.push('/calendar')} style={{ flex: 1, padding: space.md, gap: 2 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <T v="bodyStrong">Calendar</T>
+            {!o.settings.plus ? <PlusTag /> : null}
+          </View>
+          <T v="small" muted>
+            Renewals by day
+          </T>
+        </Card>
       </View>
 
       {data.candidates.length || data.priceRises.length || data.annual.length ? (

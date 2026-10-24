@@ -1,15 +1,16 @@
 import { FlexWidget, TextWidget } from 'react-native-android-widget';
 import type { WidgetData } from './data';
 
-const INK = '#141414';
-const MUTED = '#6E6E69';
-const ACCENT = '#2F6B5E';
+import { widgetColors } from './data';
+
+const DEFAULT_COLORS = widgetColors({ widgetStyle: 'light', accent: 'forest', plus: false });
 
 export function SummaryWidget({ data }: { data: WidgetData | null }) {
+  const { bg, ink: INK, muted: MUTED, accent: ACCENT } = data?.colors ?? DEFAULT_COLORS;
   return (
     <FlexWidget
       clickAction="OPEN_APP"
-      style={{ height: 'match_parent', width: 'match_parent', backgroundColor: '#FAFAF7', borderRadius: 20, padding: 14, flexDirection: 'column' }}
+      style={{ height: 'match_parent', width: 'match_parent', backgroundColor: bg, borderRadius: 20, padding: 14, flexDirection: 'column' }}
     >
       <TextWidget text="PER MONTH" style={{ fontSize: 11, color: MUTED, fontWeight: '600', letterSpacing: 0.06 }} />
       <TextWidget text={data?.total ?? '—'} style={{ fontSize: 26, color: INK, fontWeight: '600' }} />

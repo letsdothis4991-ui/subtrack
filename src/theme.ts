@@ -39,11 +39,38 @@ const dark: Palette = {
   track: '#2A2A28',
 };
 
+/** Accent colour themes. Forest is free; the rest come with SubTrack Plus. */
+export const ACCENTS = {
+  forest: { name: 'Forest', light: '#2F6B5E', lightSoft: '#E3EEEA', dark: '#7FBFAE', darkSoft: '#1F302B' },
+  ocean: { name: 'Ocean', light: '#2D5F8B', lightSoft: '#E2ECF5', dark: '#8AB6DF', darkSoft: '#1B2A38' },
+  plum: { name: 'Plum', light: '#6B3F7A', lightSoft: '#F0E6F3', dark: '#C59BD3', darkSoft: '#2E2133' },
+  sunset: { name: 'Sunset', light: '#B5552E', lightSoft: '#F7E7DF', dark: '#E8A07F', darkSoft: '#3A251C' },
+  rose: { name: 'Rose', light: '#A83E5B', lightSoft: '#F6E3E8', dark: '#E39AAE', darkSoft: '#38202A' },
+  graphite: { name: 'Graphite', light: '#3A3A38', lightSoft: '#ECECE8', dark: '#C9C9C3', darkSoft: '#2A2A28' },
+} as const;
+
+export type AccentId = keyof typeof ACCENTS;
+export const FREE_ACCENT: AccentId = 'forest';
+
+export function accentFor(id: string | undefined, plus: boolean): (typeof ACCENTS)[AccentId] {
+  const key = (id && id in ACCENTS && (plus || id === FREE_ACCENT) ? id : FREE_ACCENT) as AccentId;
+  return ACCENTS[key];
+}
+
 export function useTheme(): Palette & { dark: boolean } {
   const system = useColorScheme();
   const pref = useStore((s) => s.settings.theme);
+  const accentId = useStore((s) => s.settings.accent);
+  const plus = useStore((s) => s.settings.plus);
   const isDark = pref === 'dark' || (pref === 'system' && system === 'dark');
-  return { ...(isDark ? dark : light), dark: isDark };
+  const a = accentFor(accentId, plus);
+  const base = isDark ? dark : light;
+  return {
+    ...base,
+    accent: isDark ? a.dark : a.light,
+    accentSoft: isDark ? a.darkSoft : a.lightSoft,
+    dark: isDark,
+  };
 }
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };

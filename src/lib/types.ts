@@ -88,6 +88,10 @@ export interface Settings {
   lastCheckIn: string | null;
   /** Totals, charts and budgets count only my share of shared subscriptions. */
   countMyShareOnly: boolean;
+  /** Accent colour theme id (Plus, except the default). */
+  accent: string;
+  /** Home-screen widget look: light is free, dark and accent are Plus. */
+  widgetStyle: 'light' | 'dark' | 'accent';
 }
 
 export interface Rates {

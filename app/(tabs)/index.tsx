@@ -1,10 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { Icon } from '../../src/components/Icon';
 import { Pressable as GesturePressable } from 'react-native-gesture-handler';
 import { SwipeRow } from '../../src/components/SwipeRow';
-import { Avatar, Button, Card, Dot, Empty, IconButton, Input, Progress, Screen, Segmented, T, confirm } from '../../src/components/ui';
+import { Avatar, Button, Card, Chip, Dot, Empty, IconButton, Input, Progress, Screen, Segmented, T } from '../../src/components/ui';
+import { showToast } from '../../src/components/Toast';
+import { maybeAskForReview } from '../../src/services/review';
 import { useOverview, type SubView } from '../../src/hooks';
 import { cycleText, isShared, lifetimeSpend } from '../../src/lib/calc';
 import { convert, formatMoney } from '../../src/lib/currency';
@@ -25,13 +27,19 @@ export default function SubscriptionsScreen() {
   const [tab, setTab] = useState<Tab>('active');
   const [sort, setSort] = useState<Sort>('next');
   const [q, setQ] = useState('');
+  const [catFilter, setCatFilter] = useState<string | null>(null);
 
   const rows = useMemo(() => {
-    const list = (tab === 'active' ? o.active : o.past).filter((v) => v.sub.name.toLowerCase().includes(q.trim().toLowerCase()));
+    const list = (tab === 'active' ? o.active : o.past).filter(
+      (v) => v.sub.name.toLowerCase().includes(q.trim().toLowerCase()) && (!catFilter || v.sub.categoryId === catFilter),
+    );
     if (tab === 'active' && sort === 'cost') return [...list].sort((a, b) => b.monthly - a.monthly);
     if (sort === 'name') return [...list].sort((a, b) => a.sub.name.localeCompare(b.sub.name));
     return list;
-  }, [tab, sort, q, o.active, o.past]);
+  }, [tab, sort, q, catFilter, o.active, o.past]);
+
+  // Categories that have something on the current tab, for the filter chips.
+  const tabCats = o.categories.filter((c) => (tab === 'active' ? o.active : o.past).some((v) => v.sub.categoryId === c.id));
 
   const dueSoon = o.active.filter((v) => v.daysToNext != null && v.daysToNext <= 7);
   const dueSoonTotal = dueSoon.reduce((sum, v) => sum + convert(v.cost.amount, v.cost.currency, o.base, o.rates), 0);
@@ -43,7 +51,12 @@ export default function SubscriptionsScreen() {
   return (
     <Screen
       title="Subscriptions"
-      right={<IconButton icon="plus" label="Add subscription" onPress={add} />}
+      right={
+        <View style={{ flexDirection: 'row' }}>
+          <IconButton icon="calendar" label="Calendar" onPress={() => router.push('/calendar')} />
+          <IconButton icon="plus" label="Add subscription" onPress={add} />
+        </View>
+      }
       footer={<AdBanner />}
     >
       {o.subscriptions.length === 0 ? (
@@ -113,7 +126,10 @@ export default function SubscriptionsScreen() {
           <View style={{ marginTop: space.lg, gap: space.sm }}>
             <Segmented<Tab>
               value={tab}
-              onChange={setTab}
+              onChange={(v) => {
+                setTab(v);
+                setCatFilter(null);
+              }}
               options={[
                 { value: 'active', label: `Active · ${o.active.length}` },
                 { value: 'past', label: `Past · ${o.past.length}` },
@@ -123,6 +139,14 @@ export default function SubscriptionsScreen() {
               <Input placeholder="Search" value={q} onChangeText={setQ} style={{ flex: 1, minWidth: 0, paddingVertical: 9 }} />
               <SortButton value={sort} onChange={setSort} allowCost={tab === 'active'} />
             </View>
+            {tabCats.length > 1 ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm, paddingVertical: 2 }}>
+                <Chip label="All" selected={!catFilter} onPress={() => setCatFilter(null)} />
+                {tabCats.map((c) => (
+                  <Chip key={c.id} label={c.name} color={c.color} selected={catFilter === c.id} onPress={() => setCatFilter(catFilter === c.id ? null : c.id)} />
+                ))}
+              </ScrollView>
+            ) : null}
           </View>
 
           <View style={{ marginTop: space.sm }}>
@@ -173,6 +197,7 @@ function SubRow({ v, past }: { v: SubView; past: boolean }) {
   const cancelSubscription = useStore((s) => s.cancelSubscription);
   const restoreSubscription = useStore((s) => s.restoreSubscription);
   const deleteSubscription = useStore((s) => s.deleteSubscription);
+  const undoDelete = useStore((s) => s.undoDelete);
 
   let subtitle: string;
   if (past && s.endDate! >= today()) {
@@ -190,17 +215,34 @@ function SubRow({ v, past }: { v: SubView; past: boolean }) {
     <SwipeRow
       right={
         past
-          ? { label: 'Restore', icon: 'restore', color: t.accent, run: () => restoreSubscription(s.id) }
-          : { label: 'Archive', icon: 'archive', color: t.accent, run: () => cancelSubscription(s.id, today()) }
+          ? {
+              label: 'Restore',
+              icon: 'restore',
+              color: t.accent,
+              run: () => {
+                const endDate = s.endDate;
+                restoreSubscription(s.id);
+                showToast(`Restored ${s.name}`, { label: 'Undo', run: () => endDate && cancelSubscription(s.id, endDate) });
+              },
+            }
+          : {
+              label: 'Archive',
+              icon: 'archive',
+              color: t.accent,
+              run: () => {
+                cancelSubscription(s.id, today());
+                showToast(`Archived ${s.name}`, { label: 'Undo', run: () => restoreSubscription(s.id) });
+                maybeAskForReview();
+              },
+            }
       }
       left={{
         label: 'Delete',
         icon: 'trash',
         color: t.danger,
-        run: async () => {
-          const ok = await confirm('Delete subscription?', `${s.name} and its history will be removed.`, 'Delete', true);
-          if (ok) deleteSubscription(s.id);
-          return ok;
+        run: () => {
+          deleteSubscription(s.id);
+          showToast(`Deleted ${s.name}`, { label: 'Undo', run: () => undoDelete(s) });
         },
       }}
     >

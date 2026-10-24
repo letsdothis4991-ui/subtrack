@@ -5,6 +5,8 @@ import { ActivityIndicator, Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { addReminderTapListener, ensurePermission, rescheduleReminders } from '../src/services/notifications';
+import { ToastHost } from '../src/components/Toast';
+import { noteAppOpen } from '../src/services/review';
 import { useAutoSync } from '../src/services/sync';
 import { refreshWidget } from '../src/widget';
 import { widgetData } from '../src/widget/data';
@@ -40,6 +42,7 @@ function Effects() {
   useEffect(() => addReminderTapListener((route) => router.push(route as never)), [router]);
 
   useAutoSync();
+  useEffect(noteAppOpen, []);
 
   // Reminders need notification permission (Android 13+). Ask once there's something to remind about.
   const wantsReminders = subscriptions.some((s) => !s.endDate && s.reminderDays != null);
@@ -86,9 +89,12 @@ export default function RootLayout() {
             <Stack.Screen name="categories" options={{ title: 'Categories' }} />
             <Stack.Screen name="import" options={{ presentation: 'modal', title: 'Import from CSV' }} />
             <Stack.Screen name="check-in" options={{ presentation: 'modal', title: 'Monthly check-in' }} />
+            <Stack.Screen name="calendar" options={{ title: 'Calendar' }} />
+            <Stack.Screen name="year" options={{ title: 'Year in review' }} />
           </Stack>
         </>
       )}
+      <ToastHost />
     </SafeAreaProvider>
     </GestureHandlerRootView>
   );
