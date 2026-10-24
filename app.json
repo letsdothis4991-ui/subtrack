@@ -1,25 +1,64 @@
 {
   "expo": {
-    "name": "subtrack",
+    "name": "SubTrack",
     "slug": "subtrack",
+    "scheme": "subtrack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "ios": {
-      "supportsTablet": true
-    },
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FAFAF7",
     "android": {
+      "package": "com.reshpow.subtrack",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#2F6B5E",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "permissions": ["POST_NOTIFICATIONS", "com.android.vending.BILLING"],
       "predictiveBackGestureEnabled": false
     },
+    "ios": {
+      "bundleIdentifier": "com.reshpow.subtrack",
+      "supportsTablet": true
+    },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "output": "single",
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png",
+      "name": "SubTrack",
+      "shortName": "SubTrack",
+      "themeColor": "#2F6B5E",
+      "backgroundColor": "#FAFAF7"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        { "color": "#2F6B5E" }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "delayAppMeasurementInit": true
+        }
+      ],
+      ["expo-iap", { "android": { "store": "play" } }],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 120,
+          "backgroundColor": "#FAFAF7",
+          "dark": { "backgroundColor": "#111111" }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
     }
   }
 }
