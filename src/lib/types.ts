@@ -92,6 +92,8 @@ export interface Settings {
   accent: string;
   /** Home-screen widget look: light is free, dark and accent are Plus. */
   widgetStyle: 'light' | 'dark' | 'accent';
+  /** First-run setup finished or skipped. */
+  setupDone: boolean;
 }
 
 export interface Rates {

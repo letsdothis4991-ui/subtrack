@@ -6,7 +6,7 @@ import type { Settings } from './types';
 
 const settings: Settings = {
   baseCurrency: 'USD', monthlyBudget: null, reminderHour: 9, defaultReminderDays: 3, theme: 'system',
-  plus: false, lastCheckIn: null, countMyShareOnly: true, accent: 'forest', widgetStyle: 'light',
+  plus: false, lastCheckIn: null, countMyShareOnly: true, accent: 'forest', widgetStyle: 'light', setupDone: true,
 };
 
 const sub = (id: string, name: string, updatedAt: string) =>

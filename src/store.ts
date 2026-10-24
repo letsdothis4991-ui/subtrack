@@ -57,6 +57,7 @@ export const DEFAULT_SETTINGS: Settings = {
   countMyShareOnly: true,
   accent: 'forest',
   widgetStyle: 'light',
+  setupDone: false,
 };
 
 function guessCurrency(): string {
@@ -278,9 +279,11 @@ export const useStore = create<State>()(
     }),
     {
       name: 'subtrack-v1',
-      version: 3,
+      version: 4,
       migrate: (persisted) => {
         const s = persisted as Partial<State> & { settings?: Settings & { adsRemoved?: boolean } };
+        // Installs from before first-run setup existed don't need it.
+        if (s.settings) s.settings.setupDone ??= true;
         if (s.subscriptions) s.subscriptions = s.subscriptions.map(normaliseSubscription);
         if (s.settings && s.settings.adsRemoved) s.settings.plus = true;
         s.deleted ??= {};

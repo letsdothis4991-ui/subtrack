@@ -83,3 +83,9 @@ export const PRESETS: ServicePreset[] = [
   { name: 'Patreon', categoryId: 'other', color: '#FF424D', manageUrl: 'https://www.patreon.com/settings/memberships', logo: 'patreon' },
   { name: 'Google Play subscription', categoryId: 'other', color: '#01875F', manageUrl: PLAY_SUBS , logo: 'googleplay' },
 ];
+
+/** Shown first in the first-run setup; the rest are a search away. */
+export const POPULAR = [
+  'Netflix', 'Spotify', 'YouTube Premium', 'Amazon Prime', 'Disney+', 'Max', 'Apple Music', 'ChatGPT Plus',
+  'iCloud+', 'Google One', 'Microsoft 365', 'Xbox Game Pass', 'PlayStation Plus', 'Audible', 'Duolingo Super', 'Paramount+',
+];
