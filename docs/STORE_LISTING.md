@@ -30,8 +30,10 @@ SubTrack is a simple, private subscription tracker. No bank login, no account: j
 
 No bank login needed. A small banner keeps SubTrack free. SubTrack Plus is one payment, no subscription: no ads, a renewal calendar, your year in review, colour themes and widget styles.
 
-**Contact email:** letsdothis4991@gmail.com · **Website:** https://letsdothis4991-ui.github.io/subtrack/ · **Privacy policy:** https://letsdothis4991-ui.github.io/subtrack/privacy.html
+**Contact email:** letsdothis4991@gmail.com · **Website:** https://letsdothis4991-ui.github.io/subtrack/ (web app: /subtrack/app/) · **Privacy policy:** https://letsdothis4991-ui.github.io/subtrack/privacy.html
 
 **Category:** Finance · **Tags:** subscription tracker, bill reminder, budget
 
-**Graphics needed:** icon 512×512 (`assets/play-store-icon.png`), feature graphic 1024×500, 2–8 phone screenshots (the web build at phone width works well for these).
+**Graphics (ready):** icon 512×512 `assets/play-store-icon.png`, feature graphic `assets/store/feature-graphic.png`, phone screenshots `assets/store/01-total.png` … `06-year.png` (1080×1920, upload in order).
+
+**Price:** SubTrack Plus $1.99 launch price → $2.99.

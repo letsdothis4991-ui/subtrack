@@ -53,7 +53,7 @@ Repo → **Settings → Secrets and variables → Actions → New repository sec
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | from CLOUD_SETUP |
 
 ### 6. Turn on the web app and privacy page
-Repo → **Settings → Pages → Source: GitHub Actions**. The web app is at https://letsdothis4991-ui.github.io/subtrack/ and the privacy policy at https://letsdothis4991-ui.github.io/subtrack/privacy.html (support email: letsdothis4991@gmail.com).
+Repo → **Settings → Pages → Source: GitHub Actions**. The landing page is at https://letsdothis4991-ui.github.io/subtrack/, the web app at https://letsdothis4991-ui.github.io/subtrack/app/, the cancellation guides at …/subtrack/cancel/, and the privacy policy at https://letsdothis4991-ui.github.io/subtrack/privacy.html (support email: letsdothis4991@gmail.com).
 
 ### 7. Build the release bundle
 1. Make sure `app.json` → `expo.android.package` is the ID you want forever (currently `com.reshpow.subtrack`).
@@ -76,15 +76,15 @@ Play Console → **Create app** → name "SubTrack – Subscription Tracker", de
 Needs the uploaded build from step 9 (it declares billing).
 1. Set up a **payments profile** if prompted (**Settings → Payments profile**).
 2. **Monetise with Play → Products → In-app products → Create product**.
-3. Product ID **`subtrack_plus`** (must match exactly), name "SubTrack Plus", description "No ads, renewal calendar, year in review, colour themes and widget styles. One payment, forever." Set a price (suggestion: $4.99; it's one-off). **Save → Activate**.
+3. Product ID **`subtrack_plus`** (must match exactly), name "SubTrack Plus", description "No ads, renewal calendar, year in review, colour themes and widget styles. One payment, forever." Set a price: **$1.99 launch price**, raising to $2.99 after a month or two (it's a one-off purchase). **Save → Activate**.
 4. To test purchases without paying: **Settings → License testing** → add your Gmail.
 
 ### 11. Store listing
 **Grow users → Store presence → Main store listing**. Copy text from **[STORE_LISTING.md](STORE_LISTING.md)**.
 - App icon 512×512: `assets/play-store-icon.png`
-- Feature graphic 1024×500 (make it in Canva: the icon and "Know what you pay for" on the green `#2F6B5E`)
-- Phone screenshots, at least 2 (aim for 4–6): open the web app on your phone or in Chrome's device mode, load sample data, and capture Subscriptions, Insights, a subscription detail and Budget
-- **Store settings**: category **Finance**, tags, contact email, website = your web app URL
+- Feature graphic 1024×500: `assets/store/feature-graphic.png`
+- Phone screenshots: the six captioned images in `assets/store/` (01–06). Regenerate them with `node scripts/store-screenshots.mjs <web app URL>` after UI changes.
+- **Store settings**: category **Finance**, tags, contact email, website = https://letsdothis4991-ui.github.io/subtrack/
 
 ### 12. App content (Policy → App content): answer every item
 - **Privacy policy**: `https://letsdothis4991-ui.github.io/subtrack/privacy.html`
@@ -104,7 +104,7 @@ Needs the uploaded build from step 9 (it declares billing).
   | Approximate location | Yes | From IP, via AdMob |
   - Data is encrypted in transit: **Yes**
   - Users can request deletion: **Yes**, in-app (**Settings → Sync → Delete account**) and on the web
-- **Account deletion URL** (required because the app has accounts): `https://letsdothis4991-ui.github.io/subtrack/`, with the note "Open Settings → Sync → Delete account, or email letsdothis4991@gmail.com".
+- **Account deletion URL** (required because the app has accounts): `https://letsdothis4991-ui.github.io/subtrack/app/`, with the note "Open Settings → Sync → Delete account, or email letsdothis4991@gmail.com".
 
 ---
 
@@ -127,6 +127,7 @@ New **personal** developer accounts must run a closed test with **at least 12 te
 3. Use a **staged rollout** of 20%, then raise it to 100% after a few days if crash-free.
 4. **Send for review** ⏱ (hours to a few days for a first app).
 5. When it's live: in AdMob, **link the app to its Play listing** (Apps → App settings), so ads serve at full rates.
+6. In GitHub → Settings → Secrets and variables → Actions → **Variables**, add `PLAY_URL` = your Play listing link. The website's "Coming soon to Google Play" buttons turn into real download buttons on the next deploy.
 
 ## After launch
 - Watch **Android vitals** (crashes/ANRs) and reply to reviews in Play Console.

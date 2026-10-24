@@ -46,7 +46,7 @@ Cloud features need `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KE
 | --- | --- |
 | `.github/workflows/ci.yml` | Typecheck, unit tests and web build on every push |
 | `.github/workflows/android.yml` | On `main`: builds a test **APK** and a Play Store **AAB** (signed if the upload-key secrets are set) as downloadable artifacts |
-| `.github/workflows/pages.yml` | On `main`: deploys the web app to GitHub Pages |
+| `.github/workflows/pages.yml` | On `main`: deploys the landing page, 45 "How to cancel" guides and sitemap (`scripts/build-site.ts`) with the web app under `/app/` |
 
 See **[docs/LAUNCH_GUIDE.md](docs/LAUNCH_GUIDE.md)** for the step-by-step Play Store launch.
 

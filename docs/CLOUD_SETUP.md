@@ -19,7 +19,7 @@ Sync runs on **Supabase** (the free tier is plenty to start). Without this setup
 3. Supabase's built-in email sender is rate-limited (a few per hour). Before launch, add your own SMTP under **Authentication → SMTP Settings** (Resend, Postmark, Amazon SES and others have free tiers).
 
 ## 4. Google sign-in on the web (optional)
-**Authentication → Providers → Google**: follow the on-screen steps to create a Google OAuth client, then add your web app URL (`https://<user>.github.io/<repo>/`) under **Authentication → URL Configuration → Redirect URLs**.
+**Authentication → Providers → Google**: follow the on-screen steps to create a Google OAuth client, then add your web app URL (`https://letsdothis4991-ui.github.io/subtrack/app/`) under **Authentication → URL Configuration → Redirect URLs**.
 
 ## 5. Deploy the account-deletion function
 Install the CLI (https://supabase.com/docs/guides/cli), then from the project folder:
