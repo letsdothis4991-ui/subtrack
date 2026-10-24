@@ -233,12 +233,12 @@ export const useStore = create<State>()(
         ): SubscriptionInput => ({
           name, amount, currency: cur, cycle: 'monthly', interval: 1,
           anchorDate: addMonths(t, -monthsAgo).replace(/-\d\d$/, `-${String(3 + (name.length * 7) % 25).padStart(2, '0')}`),
-          startDate: addMonths(t, -monthsAgo), endDate: null, categoryId, notes: '', manageUrl: '', paymentMethod: '',
+          startDate: addMonths(t, -monthsAgo), endDate: null, categoryId, notes: '', manageUrl: '',
           reminderDays: 3, isTrial: false, color: null, sharedWith: [], shareMode: 'split', annualPrice: null, logo: null, ...opts,
         });
         const add = get().addSubscription;
         add(mk('Netflix', 15.49, 'streaming', 30, { logo: 'netflix', notes: 'Family plan — mostly for Stranger Things', sharedWith: ['Sam', 'Alex'], shareMode: 'i_pay', manageUrl: 'https://www.netflix.com/account' }));
-        add(mk('Spotify', 16.99, 'music', 40, { logo: 'spotify', annualPrice: 169.99, sharedWith: ['Jordan'], shareMode: 'split', manageUrl: 'https://www.spotify.com/account/overview/', paymentMethod: 'Visa •• 4021' }));
+        add(mk('Spotify', 16.99, 'music', 40, { logo: 'spotify', annualPrice: 169.99, sharedWith: ['Jordan'], shareMode: 'split', manageUrl: 'https://www.spotify.com/account/overview/' }));
         add(mk('ChatGPT Plus', 20, 'ai', 9, { notes: 'Work research and drafting', manageUrl: 'https://chatgpt.com/#settings/Subscription' }));
         add(mk('The Economist', 189, 'news', 20, { cycle: 'yearly', manageUrl: 'https://myaccount.economist.com/' }));
         add(mk('iCloud+', 2.99, 'cloud', 36, { logo: 'icloud' }));

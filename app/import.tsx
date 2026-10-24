@@ -69,7 +69,6 @@ export default function ImportCsv() {
         categoryId: categories.some((c) => c.id === d.category) ? d.category : preset?.categoryId ?? 'other',
         notes: '',
         manageUrl: preset?.manageUrl ?? '',
-        paymentMethod: '',
         reminderDays: settings.defaultReminderDays,
         isTrial: d.isTrial,
         color: preset?.color ?? null,

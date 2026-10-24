@@ -5,7 +5,10 @@ import { billingDates } from '../lib/calc';
 import { convert, formatMoney } from '../lib/currency';
 import type { Rates, Settings, Subscription } from '../lib/types';
 
-const CHANNEL = 'renewals';
+// High importance so reminders pop up on screen (heads-up). Android can't raise an existing
+// channel's importance, so this replaces the original 'renewals' channel.
+const CHANNEL = 'renewal-alerts';
+const OLD_CHANNELS = ['renewals'];
 // Android caps pending alarms per app; stay well under it.
 const MAX_SCHEDULED = 60;
 
@@ -13,7 +16,7 @@ Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
     shouldShowList: true,
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });
@@ -24,9 +27,14 @@ export async function ensurePermission(ask: boolean): Promise<boolean> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(CHANNEL, {
       name: 'Renewal reminders',
-      description: 'Heads-up before a subscription renews so you can cancel in time',
-      importance: Notifications.AndroidImportance.DEFAULT,
+      description: 'Pops up before a subscription renews so you can cancel in time',
+      importance: Notifications.AndroidImportance.HIGH,
+      enableVibrate: true,
+      vibrationPattern: [0, 250, 150, 250],
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+      sound: 'default',
     });
+    for (const id of OLD_CHANNELS) await Notifications.deleteNotificationChannelAsync(id).catch(() => {});
   }
   const current = await Notifications.getPermissionsAsync();
   if (current.granted || !ask) return current.granted;
@@ -93,4 +101,14 @@ export function addReminderTapListener(onOpen: (route: string) => void): () => v
     else if (typeof data.subscriptionId === 'string') onOpen(`/subscription/${data.subscriptionId}`);
   });
   return () => sub.remove();
+}
+
+/** Sends a sample reminder in a few seconds, so users can check pop-ups work on their phone. */
+export async function sendTestReminder(): Promise<boolean> {
+  if (!(await ensurePermission(true))) return false;
+  await Notifications.scheduleNotificationAsync({
+    content: { title: 'Netflix renews in 3 days', body: 'This is a test reminder from SubTrack. Tap to open the app.', data: {} },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5, channelId: CHANNEL },
+  });
+  return true;
 }

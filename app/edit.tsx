@@ -44,7 +44,6 @@ export default function EditSubscription() {
   const [categoryId, setCategoryId] = useState(existing?.categoryId ?? 'streaming');
   const [notes, setNotes] = useState(existing?.notes ?? '');
   const [manageUrl, setManageUrl] = useState(existing?.manageUrl ?? '');
-  const [paymentMethod, setPaymentMethod] = useState(existing?.paymentMethod ?? '');
   const [reminderDays, setReminderDays] = useState<number | null>(existing ? existing.reminderDays : settings.defaultReminderDays);
   const [isTrial, setIsTrial] = useState(existing?.isTrial ?? false);
   const [color, setColor] = useState<string | null>(existing?.color ?? null);
@@ -93,7 +92,6 @@ export default function EditSubscription() {
       categoryId,
       notes: notes.trim(),
       manageUrl: normaliseUrl(manageUrl),
-      paymentMethod: paymentMethod.trim(),
       reminderDays,
       isTrial,
       color,
@@ -290,9 +288,6 @@ export default function EditSubscription() {
           <Input value={manageUrl} onChangeText={setManageUrl} placeholder="https://" autoCapitalize="none" keyboardType="url" autoCorrect={false} />
         </Field>
 
-        <Field label="Paid with (optional)">
-          <Input value={paymentMethod} onChangeText={setPaymentMethod} placeholder="e.g. Visa •• 4021, PayPal" />
-        </Field>
 
         <Field label="Started (optional)" hint="Used for history charts and total spent. Defaults to one billing period before the next renewal.">
           <DateField value={start} onChange={setStart} placeholder="Not set" clearable />

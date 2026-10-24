@@ -23,7 +23,6 @@ function sub(over: Partial<Subscription> = {}): Subscription {
     categoryId: 'streaming',
     notes: '',
     manageUrl: '',
-    paymentMethod: '',
     reminderDays: 3,
     isTrial: false,
     color: null,
@@ -48,11 +47,12 @@ test('next renewal does not drift after short months', () => {
   assert.equal(nextRenewal(s, '2026-04-01'), '2026-04-30');
 });
 
-test('next renewal is null once a cancelled sub has ended', () => {
+test('cancelled subscriptions are past straight away and stop renewing', () => {
   const s = sub({ endDate: '2026-02-15' });
   assert.equal(nextRenewal(s, '2026-02-01'), null);
   assert.equal(isPast(s, '2026-02-16'), true);
-  assert.equal(isPast(s, '2026-02-10'), false);
+  assert.equal(isPast(s, '2026-02-10'), true);
+  assert.equal(isPast(sub(), '2026-02-10'), false);
 });
 
 test('billing dates are clipped to start and end', () => {

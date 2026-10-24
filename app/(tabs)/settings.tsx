@@ -8,7 +8,7 @@ import { formatDate, today } from '../../src/lib/dates';
 import type { ThemePref } from '../../src/lib/types';
 import { adsSupported, showPrivacyOptions } from '../../src/services/ads';
 import { pickTextFile, saveTextFile } from '../../src/services/files';
-import { ensurePermission, notificationsSupported } from '../../src/services/notifications';
+import { ensurePermission, notificationsSupported, sendTestReminder } from '../../src/services/notifications';
 import { cloudEnabled } from '../../src/services/supabase';
 import { AccountSection, PlusSection } from '../../src/components/account';
 import { useStore } from '../../src/store';
@@ -130,14 +130,26 @@ export default function SettingsScreen() {
             ))}
           </View>
           {notificationsSupported ? (
-            <Row
-              icon="bell"
-              label="Allow notifications"
-              onPress={async () => {
-                const ok = await ensurePermission(true);
-                notify(ok ? 'Notifications are on' : 'Notifications are blocked', ok ? undefined : 'Enable them for SubTrack in your phone settings.');
-              }}
-            />
+            <>
+              <Row
+                icon="bell"
+                label="Allow notifications"
+                onPress={async () => {
+                  const ok = await ensurePermission(true);
+                  if (ok) notify('Notifications are on');
+                  else if (await confirm('Notifications are blocked', 'Turn them on for SubTrack in your phone settings so reminders can pop up.', 'Open settings')) Linking.openSettings();
+                }}
+              />
+              <Row
+                icon="bell"
+                label="Send a test reminder"
+                onPress={async () => {
+                  const ok = await sendTestReminder();
+                  if (ok) notify('Test reminder on its way', 'It will pop up in about 5 seconds.');
+                  else if (await confirm('Notifications are blocked', 'Turn them on for SubTrack in your phone settings so reminders can pop up.', 'Open settings')) Linking.openSettings();
+                }}
+              />
+            </>
           ) : null}
         </Card>
       </Section>

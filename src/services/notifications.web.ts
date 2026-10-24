@@ -12,3 +12,7 @@ export async function rescheduleReminders(_subs: Subscription[], _settings: Sett
 export function addReminderTapListener(_onOpen: (route: string) => void): () => void {
   return () => {};
 }
+
+export async function sendTestReminder(): Promise<boolean> {
+  return false;
+}

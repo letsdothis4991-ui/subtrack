@@ -2,7 +2,9 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Icon } from '../../src/components/Icon';
-import { Avatar, Button, Card, Dot, Empty, IconButton, Input, Progress, Screen, Segmented, T } from '../../src/components/ui';
+import { Pressable as GesturePressable } from 'react-native-gesture-handler';
+import { SwipeRow } from '../../src/components/SwipeRow';
+import { Avatar, Button, Card, Dot, Empty, IconButton, Input, Progress, Screen, Segmented, T, confirm } from '../../src/components/ui';
 import { useOverview, type SubView } from '../../src/hooks';
 import { cycleText, isShared, lifetimeSpend } from '../../src/lib/calc';
 import { convert, formatMoney } from '../../src/lib/currency';
@@ -124,12 +126,17 @@ export default function SubscriptionsScreen() {
           </View>
 
           <View style={{ marginTop: space.sm }}>
+            {rows.length > 0 ? (
+              <T v="small" faint style={{ marginBottom: 4 }}>
+                Swipe right to {tab === 'past' ? 'restore' : 'archive'}, left to delete
+              </T>
+            ) : null}
             {rows.map((v) => (
               <SubRow key={v.sub.id} v={v} past={tab === 'past'} />
             ))}
             {rows.length === 0 ? (
               <T muted style={{ textAlign: 'center', paddingVertical: space.xl }}>
-                {tab === 'past' ? 'Cancelled subscriptions will appear here with what you paid for them.' : 'Nothing matches.'}
+                {tab === 'past' ? 'Cancelled subscriptions appear here with what you paid for them.' : 'Nothing matches.'}
               </T>
             ) : null}
           </View>
@@ -163,11 +170,15 @@ function SubRow({ v, past }: { v: SubView; past: boolean }) {
   const cat = categoryOf(categories, v.sub.categoryId);
   const s = v.sub;
 
+  const cancelSubscription = useStore((s) => s.cancelSubscription);
+  const restoreSubscription = useStore((s) => s.restoreSubscription);
+  const deleteSubscription = useStore((s) => s.deleteSubscription);
+
   let subtitle: string;
-  if (past) {
+  if (past && s.endDate! >= today()) {
+    subtitle = `Cancelled · access until ${formatDate(s.endDate!)}`;
+  } else if (past) {
     subtitle = `${formatDate(s.startDate, { year: true })} – ${formatDate(s.endDate!, { year: true })} · paid ${formatMoney(lifetimeSpend(v.cost, base, rates), base, { compact: true })}`;
-  } else if (s.endDate) {
-    subtitle = `Ends ${formatDate(s.endDate)}`;
   } else if (v.next) {
     subtitle = `${s.isTrial ? 'Trial ends' : 'Renews'} ${relativeDays(v.daysToNext!)} · ${formatDate(v.next)}`;
   } else {
@@ -176,7 +187,24 @@ function SubRow({ v, past }: { v: SubView; past: boolean }) {
   const urgent = !past && v.daysToNext != null && v.daysToNext <= 3;
 
   return (
-    <Pressable
+    <SwipeRow
+      right={
+        past
+          ? { label: 'Restore', icon: 'restore', color: t.accent, run: () => restoreSubscription(s.id) }
+          : { label: 'Archive', icon: 'archive', color: t.accent, run: () => cancelSubscription(s.id, today()) }
+      }
+      left={{
+        label: 'Delete',
+        icon: 'trash',
+        color: t.danger,
+        run: async () => {
+          const ok = await confirm('Delete subscription?', `${s.name} and its history will be removed.`, 'Delete', true);
+          if (ok) deleteSubscription(s.id);
+          return ok;
+        },
+      }}
+    >
+    <GesturePressable
       onPress={() => router.push(`/subscription/${s.id}`)}
       style={({ pressed }) => ({
         flexDirection: 'row',
@@ -216,6 +244,7 @@ function SubRow({ v, past }: { v: SubView; past: boolean }) {
           {v.cost.amount !== s.amount ? `you ${formatMoney(v.cost.amount, s.currency)}` : cycleText(s)}
         </T>
       </View>
-    </Pressable>
+    </GesturePressable>
+    </SwipeRow>
   );
 }

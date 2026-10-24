@@ -85,7 +85,7 @@ export default function SubscriptionDetail() {
           </View>
           {inBase != null ? <T muted>≈ {formatMoney(inBase, base)} in {base}</T> : null}
           <View style={{ height: 1, backgroundColor: t.border, marginVertical: space.md }} />
-          <Info label={past ? 'Ended' : sub.endDate ? 'Ends' : sub.isTrial ? 'Trial ends' : 'Next renewal'}>
+          <Info label={past ? (sub.endDate! >= today() ? 'Access until' : 'Ended') : sub.isTrial ? 'Trial ends' : 'Next renewal'}>
             {past || sub.endDate
               ? formatDate(sub.endDate!, { year: true })
               : next
@@ -101,7 +101,6 @@ export default function SubscriptionDetail() {
           {sub.reminderDays != null && !past ? (
             <Info label="Reminder">{sub.reminderDays === 0 ? 'On the day' : `${sub.reminderDays} day${sub.reminderDays > 1 ? 's' : ''} before`}</Info>
           ) : null}
-          {sub.paymentMethod ? <Info label="Paid with">{sub.paymentMethod}</Info> : null}
           {annualSaving(sub) ? (
             <View style={{ marginTop: space.sm, padding: space.md, borderRadius: 10, backgroundColor: t.accentSoft }}>
               <T v="small" color={t.accent}>
@@ -235,7 +234,7 @@ function CancelSheet({ visible, defaultDate, onClose, onConfirm }: { visible: bo
   return (
     <Sheet visible={visible} onClose={onClose} title="Mark as cancelled">
       <T muted style={{ marginBottom: space.md }}>
-        When does access end? Usually the end of the current billing period. It moves to Past after this date and keeps its price and history.
+        It moves to Past straight away and keeps its price and history. When does your access end? Usually the end of the current billing period.
       </T>
       <DateField value={date} onChange={setDate} />
       <Button label="Confirm" onPress={() => date && onConfirm(date)} disabled={!date} style={{ marginTop: space.lg }} />

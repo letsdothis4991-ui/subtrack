@@ -24,7 +24,6 @@ export function normaliseSubscription(x: Partial<Subscription> & Pick<Subscripti
     color: null,
     notes: '',
     manageUrl: '',
-    paymentMethod: '',
     reminderDays: null,
     isTrial: false,
     endDate: null,

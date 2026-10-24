@@ -42,7 +42,6 @@ export interface Subscription {
   /** "Why I have it". */
   notes: string;
   manageUrl: string;
-  paymentMethod: string;
   /** Days before renewal to remind; null = no reminder. */
   reminderDays: number | null;
   isTrial: boolean;

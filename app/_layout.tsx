@@ -2,8 +2,9 @@ import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { addReminderTapListener, rescheduleReminders } from '../src/services/notifications';
+import { addReminderTapListener, ensurePermission, rescheduleReminders } from '../src/services/notifications';
 import { useAutoSync } from '../src/services/sync';
 import { refreshWidget } from '../src/widget';
 import { widgetData } from '../src/widget/data';
@@ -30,7 +31,8 @@ function Effects() {
   // Keep scheduled reminders in sync with the data (debounced).
   useEffect(() => {
     const id = setTimeout(() => {
-      rescheduleReminders(subscriptions, settings, rates).catch(() => {});
+      // Archived (cancelled) subscriptions don't renew, so they get no reminders.
+      rescheduleReminders(subscriptions.filter((s) => !s.endDate), settings, rates).catch(() => {});
     }, 800);
     return () => clearTimeout(id);
   }, [subscriptions, settings.reminderHour, settings.baseCurrency]);
@@ -38,6 +40,12 @@ function Effects() {
   useEffect(() => addReminderTapListener((route) => router.push(route as never)), [router]);
 
   useAutoSync();
+
+  // Reminders need notification permission (Android 13+). Ask once there's something to remind about.
+  const wantsReminders = subscriptions.some((s) => !s.endDate && s.reminderDays != null);
+  useEffect(() => {
+    if (wantsReminders) ensurePermission(true).catch(() => {});
+  }, [wantsReminders]);
 
   // Keep the home-screen widget current (Android only).
   const categories = useStore((s) => s.categories);
@@ -53,6 +61,7 @@ export default function RootLayout() {
   const hydrated = useStore((s) => s.hydrated);
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <StatusBar style={t.dark ? 'light' : 'dark'} />
       {!hydrated ? (
@@ -81,5 +90,6 @@ export default function RootLayout() {
         </>
       )}
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -29,10 +29,10 @@ const csvCell = (v: unknown) => {
 };
 
 export function toCSV(subscriptions: Subscription[], categories: Category[]): string {
-  const header = ['Name', 'Amount', 'Currency', 'Cycle', 'Every', 'Next/anchor date', 'Start', 'End', 'Category', 'Payment method', 'Manage URL', 'Shared with', 'Share mode', 'Notes'];
+  const header = ['Name', 'Amount', 'Currency', 'Cycle', 'Every', 'Next/anchor date', 'Start', 'End', 'Category', 'Manage URL', 'Shared with', 'Share mode', 'Notes'];
   const rows = subscriptions.map((s) => [
     s.name, s.amount, s.currency, s.cycle, s.interval, s.anchorDate, s.startDate, s.endDate ?? '',
-    categories.find((c) => c.id === s.categoryId)?.name ?? '', s.paymentMethod, s.manageUrl, (s.sharedWith ?? []).join('; '), s.shareMode ?? '', s.notes,
+    categories.find((c) => c.id === s.categoryId)?.name ?? '', s.manageUrl, (s.sharedWith ?? []).join('; '), s.shareMode ?? '', s.notes,
   ]);
   return [header, ...rows].map((r) => r.map(csvCell).join(',')).join('\n');
 }

@@ -27,9 +27,9 @@ export function asMyShare(s: Subscription): Subscription {
   return { ...s, amount: s.amount * f, priceHistory: s.priceHistory.map((p) => ({ ...p, amount: p.amount * f })) };
 }
 
-/** Past = cancelled and the paid period is over. A future end date still counts as active. */
-export function isPast(s: Subscription, on: ISODate = today()): boolean {
-  return s.endDate != null && s.endDate < on;
+/** Past = cancelled (archived), even if access continues until the end date. */
+export function isPast(s: Subscription, _on: ISODate = today()): boolean {
+  return s.endDate != null;
 }
 
 export function isActive(s: Subscription, on: ISODate = today()): boolean {
