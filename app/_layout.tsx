@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { addReminderTapListener, ensurePermission, rescheduleReminders } from '../src/services/notifications';
 import { ToastHost } from '../src/components/Toast';
 import { usePlusRestore } from '../src/services/purchases';
+import { noteNudgeOpen } from '../src/services/nudge';
 import { noteAppOpen } from '../src/services/review';
 import { useAutoSync } from '../src/services/sync';
 import { refreshWidget } from '../src/widget';
@@ -45,6 +46,7 @@ function Effects() {
   useAutoSync();
   usePlusRestore();
   useEffect(noteAppOpen, []);
+  useEffect(noteNudgeOpen, []);
 
   // Reminders need notification permission (Android 13+). Ask once there's something to remind about.
   const wantsReminders = subscriptions.some((s) => !s.endDate && s.reminderDays != null);
@@ -86,6 +88,7 @@ export default function RootLayout() {
             }}
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false, title: 'SubTrack' }} />
+            <Stack.Screen name="welcome" options={{ headerShown: false, title: 'Welcome', gestureEnabled: false }} />
             <Stack.Screen name="edit" options={{ presentation: 'modal', title: 'Subscription' }} />
             <Stack.Screen name="subscription/[id]" options={{ title: '' }} />
             <Stack.Screen name="categories" options={{ title: 'Categories' }} />

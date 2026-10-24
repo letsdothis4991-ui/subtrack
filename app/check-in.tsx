@@ -6,6 +6,7 @@ import { formatMoney } from '../src/lib/currency';
 import { today } from '../src/lib/dates';
 import { logoOf } from '../src/lib/logo';
 import type { Usage } from '../src/lib/types';
+import { afterSaving } from '../src/services/nudge';
 import { maybeAskForReview } from '../src/services/review';
 import { categoryOf, useStore } from '../src/store';
 import { space, useTheme } from '../src/theme';
@@ -29,7 +30,10 @@ export default function CheckIn() {
 
   const done = () => {
     completeCheckIn(month);
-    if (answered > 0) maybeAskForReview();
+    // Anything not used at all is money the check-in just found.
+    const unused = subs.filter((v) => v.sub.usage?.[month] === 'never').reduce((sum, v) => sum + v.monthly * 12, 0);
+    if (unused > 0) afterSaving({ kind: 'found', yearly: unused });
+    else if (answered > 0) maybeAskForReview();
     router.canGoBack() ? router.back() : router.replace('/');
   };
 

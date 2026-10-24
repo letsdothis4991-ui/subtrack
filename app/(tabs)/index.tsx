@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { Icon } from '../../src/components/Icon';
@@ -6,7 +6,8 @@ import { Pressable as GesturePressable } from 'react-native-gesture-handler';
 import { SwipeRow } from '../../src/components/SwipeRow';
 import { Avatar, Button, Card, Chip, Dot, Empty, IconButton, Input, Progress, Screen, Segmented, T } from '../../src/components/ui';
 import { showToast } from '../../src/components/Toast';
-import { maybeAskForReview } from '../../src/services/review';
+import { PlusNudge } from '../../src/components/PlusGate';
+import { afterSaving } from '../../src/services/nudge';
 import { useOverview, type SubView } from '../../src/hooks';
 import { cycleText, isShared, lifetimeSpend } from '../../src/lib/calc';
 import { convert, formatMoney } from '../../src/lib/currency';
@@ -47,6 +48,8 @@ export default function SubscriptionsScreen() {
   const add = () => router.push('/edit');
   const month = today().slice(0, 7);
   const checkInDue = o.active.length > 0 && o.settings.lastCheckIn !== month && o.subscriptions.some((s) => s.createdAt.slice(0, 7) < month);
+
+  if (!o.settings.setupDone && o.subscriptions.length === 0) return <Redirect href="/welcome" />;
 
   return (
     <Screen
@@ -94,6 +97,8 @@ export default function SubscriptionsScreen() {
               </View>
             ) : null}
           </Card>
+
+          <PlusNudge />
 
           {checkInDue && tab === 'active' ? (
             <Pressable
@@ -232,7 +237,7 @@ function SubRow({ v, past }: { v: SubView; past: boolean }) {
               run: () => {
                 cancelSubscription(s.id, today());
                 showToast(`Archived ${s.name}`, { label: 'Undo', run: () => restoreSubscription(s.id) });
-                maybeAskForReview();
+                afterSaving({ kind: 'cancelled', yearly: v.monthly * 12 });
               },
             }
       }
