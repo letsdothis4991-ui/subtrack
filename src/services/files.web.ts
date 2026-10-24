@@ -7,11 +7,11 @@ export async function saveTextFile(name: string, text: string, mimeType: string)
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function pickTextFile(): Promise<string | null> {
+export function pickTextFile(accept = 'application/json,.json'): Promise<string | null> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'application/json,.json';
+    input.accept = accept;
     input.onchange = () => {
       const f = input.files?.[0];
       if (!f) return resolve(null);

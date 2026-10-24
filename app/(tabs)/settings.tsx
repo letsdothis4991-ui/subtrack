@@ -9,12 +9,12 @@ import type { ThemePref } from '../../src/lib/types';
 import { adsSupported, showPrivacyOptions } from '../../src/services/ads';
 import { pickTextFile, saveTextFile } from '../../src/services/files';
 import { ensurePermission, notificationsSupported } from '../../src/services/notifications';
-import { purchasesSupported, useRemoveAds } from '../../src/services/purchases';
-import { DEFAULT_SETTINGS, useStore } from '../../src/store';
+import { cloudEnabled } from '../../src/services/supabase';
+import { AccountSection, PlusSection } from '../../src/components/account';
+import { useStore } from '../../src/store';
 import { space, useTheme } from '../../src/theme';
-import { DEFAULT_CATEGORIES } from '../../src/lib/presets';
 
-const PRIVACY_URL = 'https://github.com/reshpow-rgb/subtrack/blob/main/docs/PRIVACY.md';
+const PRIVACY_URL = process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://github.com/reshpow-rgb/subtrack/blob/main/docs/PRIVACY.md';
 
 export default function SettingsScreen() {
   const t = useTheme();
@@ -52,12 +52,15 @@ export default function SettingsScreen() {
 
   const eraseAll = async () => {
     if (!(await confirm('Erase all data?', 'This removes every subscription and category from this device. Export a backup first if unsure.', 'Erase', true))) return;
-    useStore.setState({ subscriptions: [], categories: DEFAULT_CATEGORIES, settings: { ...DEFAULT_SETTINGS, adsRemoved: settings.adsRemoved } });
+    useStore.getState().eraseAll();
   };
 
   return (
     <Screen title="Settings">
-      <Section title="Currency" style={{ marginTop: 0 }}>
+      <AccountSection />
+      <PlusSection />
+
+      <Section title="Currency">
         <Card>
           <T muted v="small" style={{ marginBottom: 8 }}>
             Base currency. All totals, charts and budgets are converted to this.
@@ -155,17 +158,17 @@ export default function SettingsScreen() {
         </Card>
       </Section>
 
-      {purchasesSupported ? <RemoveAdsSection /> : null}
 
       <Section title="Your data">
         <Card style={{ paddingVertical: 0 }}>
           <Row icon="download" label="Export backup (JSON)" onPress={exportJson} />
           <Row icon="download" label="Export spreadsheet (CSV)" onPress={exportCsv} />
           <Row icon="upload" label="Import backup" onPress={doImport} />
+          <Row icon="star" label="Smart add (screenshot, email, CSV)" onPress={() => router.push('/smart-add')} />
           <Row icon="trash" label="Erase all data" danger onPress={eraseAll} />
         </Card>
         <T v="small" faint style={{ marginTop: space.sm }}>
-          Your data stays on this device{Platform.OS === 'web' ? ' (in this browser)' : ' and in your Google backup'}. Use export/import to move it between the app and the web.
+          Your data is stored on this device{Platform.OS === 'web' ? ' (in this browser)' : ''}{cloudEnabled ? ', and in your SubTrack account when you sign in to sync' : '. Use export/import to move it between devices'}.
         </T>
       </Section>
 
@@ -177,30 +180,5 @@ export default function SettingsScreen() {
         </Card>
       </Section>
     </Screen>
-  );
-}
-
-function RemoveAdsSection() {
-  const t = useTheme();
-  const adsRemoved = useStore((s) => s.settings.adsRemoved);
-  const iap = useRemoveAds();
-  return (
-    <Section title="SubTrack Plus">
-      <Card style={{ paddingVertical: 0 }}>
-        {adsRemoved ? (
-          <Row icon="star" label="Ads removed. Thank you!" right={null} />
-        ) : (
-          <>
-            <Row icon="star" label="Remove ads" value={iap.price ?? (iap.available ? '' : 'Unavailable')} onPress={iap.available ? iap.buy : undefined} />
-            <Row icon="restore" label="Restore purchase" onPress={iap.restore} />
-          </>
-        )}
-      </Card>
-      {!adsRemoved ? (
-        <T v="small" faint style={{ marginTop: space.sm }} color={t.textFaint}>
-          A one-off purchase that removes ads for good on this Google account.
-        </T>
-      ) : null}
-    </Section>
   );
 }

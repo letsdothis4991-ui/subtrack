@@ -5,6 +5,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TextInput,
@@ -15,6 +16,8 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
+import { LOGO_PATHS } from '../lib/logos.generated';
 import { font, radius, space, useTheme } from '../theme';
 import { Icon, type IconName } from './Icon';
 
@@ -274,11 +277,18 @@ export function Dot({ color, size = 10 }: { color: string; size?: number }) {
   return <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: color }} />;
 }
 
-/** Coloured initial, used as a lightweight logo. */
-export function Avatar({ name, color, size = 40 }: { name: string; color: string; size?: number }) {
+/** Service logo on its brand colour, or a coloured initial when there's no logo. */
+export function Avatar({ name, color, size = 40, logo }: { name: string; color: string; size?: number; logo?: string | null }) {
+  const path = logo ? LOGO_PATHS[logo] : undefined;
   return (
     <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: color, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ color: '#fff', fontWeight: '700', fontSize: size * 0.42 }}>{name.trim().charAt(0).toUpperCase() || '?'}</Text>
+      {path ? (
+        <Svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24">
+          <Path d={path} fill="#fff" />
+        </Svg>
+      ) : (
+        <Text style={{ color: '#fff', fontWeight: '700', fontSize: size * 0.42 }}>{name.trim().charAt(0).toUpperCase() || '?'}</Text>
+      )}
     </View>
   );
 }
@@ -334,6 +344,21 @@ export function confirm(title: string, message: string, okLabel = 'OK', destruct
       { text: okLabel, style: destructive ? 'destructive' : 'default', onPress: () => resolve(true) },
     ]),
   );
+}
+
+/** Share sheet on Android; Web Share or clipboard in the browser. */
+export async function shareText(message: string) {
+  if (Platform.OS !== 'web') {
+    await Share.share({ message });
+    return;
+  }
+  const nav = navigator as Navigator & { share?: (d: { text: string }) => Promise<void> };
+  if (nav.share) {
+    await nav.share({ text: message }).catch(() => {});
+  } else {
+    await navigator.clipboard?.writeText(message);
+    window.alert('Copied to clipboard');
+  }
 }
 
 export function notify(title: string, message?: string) {

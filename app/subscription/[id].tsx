@@ -3,13 +3,15 @@ import { useState } from 'react';
 import { Linking, ScrollView, View } from 'react-native';
 import { DateField } from '../../src/components/DatePicker';
 import { Icon } from '../../src/components/Icon';
-import { Avatar, Button, Card, Dot, Empty, IconButton, Section, Sheet, T, confirm, styles } from '../../src/components/ui';
+import { annualSaving, outstanding, settlements } from '../../src/lib/insights';
+import { Avatar, Button, Chip, shareText, Card, Dot, Empty, IconButton, Section, Sheet, T, confirm, styles } from '../../src/components/ui';
 import { cycleText, isPast, isShared, lifetimeSpend, monthlyCost, myShareFactor, nextRenewal, owedFactor } from '../../src/lib/calc';
 import { shareSummary } from '../../src/lib/share';
 import { useCostOf } from '../../src/hooks';
 import { convert, formatMoney } from '../../src/lib/currency';
 import { daysBetween, formatDate, relativeDays, today } from '../../src/lib/dates';
 import { categoryOf, useStore } from '../../src/store';
+import { logoOf } from '../../src/lib/logo';
 import { space, useTheme } from '../../src/theme';
 
 export default function SubscriptionDetail() {
@@ -25,6 +27,7 @@ export default function SubscriptionDetail() {
   const deleteSubscription = useStore((s) => s.deleteSubscription);
   const [cancelling, setCancelling] = useState(false);
   const costOf = useCostOf();
+  const toggleSettlement = useStore((s) => s.toggleSettlement);
 
   if (!sub) {
     return (
@@ -41,6 +44,8 @@ export default function SubscriptionDetail() {
   const monthly = monthlyCost(costOf(sub), base, rates);
   const spent = lifetimeSpend(costOf(sub), base, rates);
   const shared = isShared(sub);
+  const settleRows = settlements(sub);
+  const owedTotal = outstanding(sub);
   const inBase = sub.currency !== base ? convert(sub.amount, sub.currency, base, rates) : null;
   const months = Math.max(0, Math.round(daysBetween(sub.startDate, sub.endDate && sub.endDate < today() ? sub.endDate : today()) / 30.44));
   const history = [...sub.priceHistory].sort((a, b) => b.from.localeCompare(a.from));
@@ -62,7 +67,7 @@ export default function SubscriptionDetail() {
       />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 64 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, marginTop: space.sm }}>
-          <Avatar name={sub.name} color={sub.color ?? cat.color} size={56} />
+          <Avatar name={sub.name} color={sub.color ?? cat.color} size={56} logo={logoOf(sub)} />
           <View style={{ flex: 1 }}>
             <T v="h1">{sub.name}</T>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -97,6 +102,13 @@ export default function SubscriptionDetail() {
             <Info label="Reminder">{sub.reminderDays === 0 ? 'On the day' : `${sub.reminderDays} day${sub.reminderDays > 1 ? 's' : ''} before`}</Info>
           ) : null}
           {sub.paymentMethod ? <Info label="Paid with">{sub.paymentMethod}</Info> : null}
+          {annualSaving(sub) ? (
+            <View style={{ marginTop: space.sm, padding: space.md, borderRadius: 10, backgroundColor: t.accentSoft }}>
+              <T v="small" color={t.accent}>
+                The annual plan ({formatMoney(sub.annualPrice!, sub.currency)}) would save you {formatMoney(annualSaving(sub)!, sub.currency)} a year.
+              </T>
+            </View>
+          ) : null}
         </Card>
 
         {shared ? (
@@ -116,6 +128,50 @@ export default function SubscriptionDetail() {
                 </>
               ) : null}
             </Card>
+          </Section>
+        ) : null}
+
+        {owedFactor(sub) > 0 && settleRows.length > 0 ? (
+          <Section title="Settle up" right={<T v="small" color={owedTotal > 0 ? t.warn : t.accent}>{owedTotal > 0 ? `${formatMoney(owedTotal, sub.currency)} owed` : 'All paid'}</T>}>
+            <Card style={{ paddingVertical: space.xs }}>
+              {settleRows.map((r, i) => (
+                <View key={r.date} style={{ paddingVertical: 12, borderTopWidth: i ? 1 : 0, borderTopColor: t.border, gap: 8 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <T v="small" style={{ fontWeight: '600' }}>
+                      {formatDate(r.date, { year: true })}
+                    </T>
+                    <T v="small" muted>
+                      {formatMoney(r.perPerson, r.currency)} each
+                    </T>
+                  </View>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
+                    {sub.sharedWith.map((p) => (
+                      <Chip key={p} label={`${r.paid.includes(p) ? '✓ ' : ''}${p}`} selected={r.paid.includes(p)} onPress={() => toggleSettlement(sub.id, r.date, p)} />
+                    ))}
+                  </View>
+                </View>
+              ))}
+            </Card>
+            {owedTotal > 0 ? (
+              <Button
+                kind="secondary"
+                icon="users"
+                label="Send a reminder"
+                style={{ marginTop: space.sm }}
+                onPress={() => {
+                  const lines = sub.sharedWith
+                    .map((p) => {
+                      const due = settleRows.filter((r) => r.unpaid.includes(p)).reduce((sum, r) => sum + r.perPerson, 0);
+                      return due > 0 ? `${p}: ${formatMoney(due, sub.currency)}` : null;
+                    })
+                    .filter(Boolean);
+                  shareText(`${sub.name} share 🙂\n${lines.join('\n')}\nThanks!`);
+                }}
+              />
+            ) : null}
+            <T v="small" faint style={{ marginTop: space.sm }}>
+              Tap a name when they've paid you for that renewal.
+            </T>
           </Section>
         ) : null}
 

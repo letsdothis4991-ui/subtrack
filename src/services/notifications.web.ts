@@ -9,6 +9,6 @@ export async function ensurePermission(_ask: boolean): Promise<boolean> {
 
 export async function rescheduleReminders(_subs: Subscription[], _settings: Settings, _rates: Rates): Promise<void> {}
 
-export function addReminderTapListener(_onOpen: (subscriptionId: string) => void): () => void {
+export function addReminderTapListener(_onOpen: (route: string) => void): () => void {
   return () => {};
 }

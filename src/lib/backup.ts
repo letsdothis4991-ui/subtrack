@@ -11,7 +11,7 @@ export interface BackupFile {
 
 export function makeBackup(subscriptions: Subscription[], categories: Category[], settings: Settings): BackupFile {
   // Purchases stay with the store account, not the backup.
-  const { adsRemoved: _ignored, ...rest } = settings;
+  const { plus: _ignored, ...rest } = settings;
   return { app: 'subtrack', version: 1, exportedAt: new Date().toISOString(), subscriptions, categories, settings: rest };
 }
 

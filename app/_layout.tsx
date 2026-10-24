@@ -1,9 +1,12 @@
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { addReminderTapListener, rescheduleReminders } from '../src/services/notifications';
+import { useAutoSync } from '../src/services/sync';
+import { refreshWidget } from '../src/widget';
+import { widgetData } from '../src/widget/data';
 import { useStore } from '../src/store';
 import { useTheme } from '../src/theme';
 
@@ -29,7 +32,15 @@ function Effects() {
     return () => clearTimeout(id);
   }, [subscriptions, settings.reminderHour, settings.baseCurrency]);
 
-  useEffect(() => addReminderTapListener((id) => router.push(`/subscription/${id}`)), [router]);
+  useEffect(() => addReminderTapListener((route) => router.push(route as never)), [router]);
+
+  useAutoSync();
+
+  // Keep the home-screen widget current (Android only).
+  const categories = useStore((s) => s.categories);
+  useEffect(() => {
+    if (Platform.OS === 'android') refreshWidget(widgetData({ subscriptions, settings, rates }));
+  }, [subscriptions, settings, rates, categories]);
 
   return null;
 }
@@ -61,6 +72,8 @@ export default function RootLayout() {
             <Stack.Screen name="edit" options={{ presentation: 'modal', title: 'Subscription' }} />
             <Stack.Screen name="subscription/[id]" options={{ title: '' }} />
             <Stack.Screen name="categories" options={{ title: 'Categories' }} />
+            <Stack.Screen name="smart-add" options={{ presentation: 'modal', title: 'Smart add' }} />
+            <Stack.Screen name="check-in" options={{ presentation: 'modal', title: 'Monthly check-in' }} />
           </Stack>
         </>
       )}

@@ -16,7 +16,10 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "permissions": ["POST_NOTIFICATIONS", "com.android.vending.BILLING"],
+      "permissions": [
+        "POST_NOTIFICATIONS",
+        "com.android.vending.BILLING"
+      ],
       "predictiveBackGestureEnabled": false
     },
     "ios": {
@@ -36,7 +39,9 @@
       "expo-router",
       [
         "expo-notifications",
-        { "color": "#2F6B5E" }
+        {
+          "color": "#2F6B5E"
+        }
       ],
       [
         "react-native-google-mobile-ads",
@@ -46,14 +51,42 @@
           "delayAppMeasurementInit": true
         }
       ],
-      ["expo-iap", { "android": { "store": "play" } }],
+      [
+        "expo-iap",
+        {
+          "android": {
+            "store": "play"
+          }
+        }
+      ],
       [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
           "imageWidth": 120,
           "backgroundColor": "#FAFAF7",
-          "dark": { "backgroundColor": "#111111" }
+          "dark": {
+            "backgroundColor": "#111111"
+          }
+        }
+      ],
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "Summary",
+              "label": "SubTrack",
+              "description": "Monthly total and next renewals",
+              "minWidth": "180dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/widget-preview.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 3600000
+            }
+          ]
         }
       ]
     ],

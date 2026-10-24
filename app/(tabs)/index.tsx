@@ -6,9 +6,10 @@ import { Avatar, Button, Card, Dot, Empty, IconButton, Input, Progress, Screen, 
 import { useOverview, type SubView } from '../../src/hooks';
 import { cycleText, isShared, lifetimeSpend } from '../../src/lib/calc';
 import { convert, formatMoney } from '../../src/lib/currency';
-import { formatDate, relativeDays } from '../../src/lib/dates';
+import { formatDate, relativeDays, today } from '../../src/lib/dates';
 import { AdBanner } from '../../src/services/ads';
 import { categoryOf, useStore } from '../../src/store';
+import { logoOf } from '../../src/lib/logo';
 import { space, useTheme } from '../../src/theme';
 
 type Tab = 'active' | 'past';
@@ -34,6 +35,8 @@ export default function SubscriptionsScreen() {
   const dueSoonTotal = dueSoon.reduce((sum, v) => sum + convert(v.cost.amount, v.cost.currency, o.base, o.rates), 0);
   const budget = o.settings.monthlyBudget;
   const add = () => router.push('/edit');
+  const month = today().slice(0, 7);
+  const checkInDue = o.active.length > 0 && o.settings.lastCheckIn !== month && o.subscriptions.some((s) => s.createdAt.slice(0, 7) < month);
 
   return (
     <Screen
@@ -76,6 +79,24 @@ export default function SubscriptionsScreen() {
               </View>
             ) : null}
           </Card>
+
+          {checkInDue && tab === 'active' ? (
+            <Pressable
+              onPress={() => router.push('/check-in')}
+              style={{ marginTop: space.md, padding: space.md, borderRadius: 12, backgroundColor: t.accentSoft, flexDirection: 'row', gap: space.sm, alignItems: 'center' }}
+            >
+              <Icon name="check" size={18} color={t.accent} />
+              <View style={{ flex: 1 }}>
+                <T v="small" color={t.accent} style={{ fontWeight: '600' }}>
+                  Monthly check-in
+                </T>
+                <T v="small" color={t.accent}>
+                  Still using everything? 30 seconds to spot what to cancel.
+                </T>
+              </View>
+              <Icon name="chevronRight" size={18} color={t.accent} />
+            </Pressable>
+          ) : null}
 
           {dueSoon.length > 0 && tab === 'active' ? (
             <View style={{ marginTop: space.md, padding: space.md, borderRadius: 12, backgroundColor: t.warnSoft, flexDirection: 'row', gap: space.sm, alignItems: 'center' }}>
@@ -167,7 +188,7 @@ function SubRow({ v, past }: { v: SubView; past: boolean }) {
         opacity: pressed ? 0.6 : past ? 0.75 : 1,
       })}
     >
-      <Avatar name={s.name} color={s.color ?? cat.color} />
+      <Avatar name={s.name} color={s.color ?? cat.color} logo={logoOf(s)} />
       <View style={{ flex: 1, gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <T v="bodyStrong" numberOfLines={1} style={{ flexShrink: 1 }}>

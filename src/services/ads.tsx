@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import mobileAds, { AdsConsent, BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { useStore } from '../store';
 
-// Replace with your AdMob banner unit id before release (see docs/RELEASE.md).
+// Replace with your AdMob banner unit id before release (see docs/LAUNCH_GUIDE.md).
 const BANNER_UNIT_ID = __DEV__ ? TestIds.ADAPTIVE_BANNER : process.env.EXPO_PUBLIC_ADMOB_BANNER_ID ?? TestIds.ADAPTIVE_BANNER;
 
 let ready: Promise<boolean> | null = null;
@@ -31,21 +31,21 @@ export async function showPrivacyOptions(): Promise<void> {
 
 export const adsSupported = true;
 
-/** A single, unobtrusive anchored banner. Renders nothing once ads are removed. */
+/** A single, unobtrusive anchored banner. Renders nothing for Plus users. */
 export function AdBanner() {
-  const adsRemoved = useStore((s) => s.settings.adsRemoved);
+  const plus = useStore((s) => s.settings.plus);
   const [canShow, setCanShow] = useState(false);
 
   useEffect(() => {
-    if (adsRemoved) return;
+    if (plus) return;
     let alive = true;
     initAds().then((ok) => alive && setCanShow(ok));
     return () => {
       alive = false;
     };
-  }, [adsRemoved]);
+  }, [plus]);
 
-  if (adsRemoved || !canShow) return null;
+  if (plus || !canShow) return null;
   return (
     <View style={{ alignItems: 'center' }}>
       <BannerAd unitId={BANNER_UNIT_ID} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />

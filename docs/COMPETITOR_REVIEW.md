@@ -31,11 +31,11 @@ Researched October 2026. Many "best of" lists are written by app vendors, so the
 - **Shared subscriptions**: split, I pay (shows what you're owed), or someone else pays, with totals that count only your share
 - **Charts of actual monthly charges** (yearly plans show in the month they hit) plus 6 months projected, not just an average
 
-## Gaps compared with the leaders (see IMPROVEMENTS.md)
+## Gaps closed in v1.1
 
-- No automatic detection (Rocket Money's bank link, ReSubs' email/screenshot import)
-- No cloud sync between phone and web (Tilla, Rocket Money); only export/import for now
-- No home-screen widget, and no service logos (Bobby-style apps show logos)
-- No iOS build published yet (the code supports it)
+- Automatic detection: smart add reads screenshots and billing emails (like ReSubs) without bank access
+- Cloud sync between phone and web (like Tilla and Rocket Money)
+- Service logos and a home-screen widget
+- Still to come: iOS release, web push reminders
 
 Sources: [SubTracker, best subscription tracker apps 2026](https://subtracker.io/best/best-subscription-tracker-apps), [Origin, 10 best subscription management apps 2026](https://useorigin.com/resources/blog/10-best-subscription-management-tracking-apps-in-2026), [Rocket Money, best subscription management apps](https://www.rocketmoney.com/learn/personal-finance/best-subscription-management-apps), [Reviewed, subscription tracker apps](https://reviewed.com/tech/features/subscription-tracker-apps-save-you-money), [ReSubs, best subscription tracker apps](https://resubs.app/resources/best-subscription-tracker-apps), [RecurDash](https://recurdash.com/blog/best-subscription-tracker-apps)

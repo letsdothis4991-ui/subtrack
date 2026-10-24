@@ -11,8 +11,8 @@ export async function saveTextFile(name: string, text: string, mimeType: string)
   await Sharing.shareAsync(file.uri, { mimeType, dialogTitle: name });
 }
 
-export async function pickTextFile(): Promise<string | null> {
-  const res = await DocumentPicker.getDocumentAsync({ type: ['application/json', 'text/plain', '*/*'], copyToCacheDirectory: true });
+export async function pickTextFile(_accept?: string): Promise<string | null> {
+  const res = await DocumentPicker.getDocumentAsync({ type: ['application/json', 'text/csv', 'text/plain', '*/*'], copyToCacheDirectory: true });
   if (res.canceled || !res.assets?.[0]) return null;
   return new File(res.assets[0].uri).text();
 }

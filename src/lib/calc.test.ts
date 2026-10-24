@@ -4,12 +4,13 @@ import { test } from 'node:test';
 import { asMyShare, billingDates, isPast, myShareFactor, owedFactor, lifetimeSpend, monthlyCost, monthlySeries, nextRenewal, priceAt } from './calc';
 import { convert, FALLBACK_RATES } from './currency';
 import { addMonths } from './dates';
+import { normaliseSubscription } from './sync';
 import type { Subscription } from './types';
 
 const rates = FALLBACK_RATES;
 
 function sub(over: Partial<Subscription> = {}): Subscription {
-  return {
+  return normaliseSubscription({
     id: 's1',
     name: 'Test',
     amount: 10,
@@ -31,7 +32,7 @@ function sub(over: Partial<Subscription> = {}): Subscription {
     priceHistory: [{ from: '2025-10-31', amount: 10, currency: 'USD' }],
     createdAt: '2025-10-31T00:00:00Z',
     ...over,
-  };
+  });
 }
 
 test('addMonths clamps to month end', () => {

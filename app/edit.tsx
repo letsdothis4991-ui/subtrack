@@ -2,6 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Switch, View } from 'react-native';
 import { DateField } from '../src/components/DatePicker';
+import { Icon } from '../src/components/Icon';
 import { CategoryPicker, CurrencyField } from '../src/components/pickers';
 import { Avatar, Button, Chip, Field, IconButton, Input, Segmented, T, styles } from '../src/components/ui';
 import { nextRenewal } from '../src/lib/calc';
@@ -47,6 +48,8 @@ export default function EditSubscription() {
   const [reminderDays, setReminderDays] = useState<number | null>(existing ? existing.reminderDays : settings.defaultReminderDays);
   const [isTrial, setIsTrial] = useState(existing?.isTrial ?? false);
   const [color, setColor] = useState<string | null>(existing?.color ?? null);
+  const [logo, setLogo] = useState<string | null>(existing?.logo ?? null);
+  const [annualPrice, setAnnualPrice] = useState(existing?.annualPrice ? String(existing.annualPrice) : '');
   const [shared, setShared] = useState((existing?.sharedWith?.length ?? 0) > 0 || existing?.shareMode === 'they_pay');
   const [sharedWith, setSharedWith] = useState<string[]>(existing?.sharedWith ?? []);
   const [shareMode, setShareMode] = useState<ShareMode>(existing?.shareMode ?? 'split');
@@ -60,6 +63,7 @@ export default function EditSubscription() {
       setCategoryId(p.categoryId);
       setManageUrl(p.manageUrl);
       setColor(p.color);
+      setLogo(p.logo ?? null);
     } else if (query.trim()) {
       setName(query.trim());
     }
@@ -93,6 +97,8 @@ export default function EditSubscription() {
       reminderDays,
       isTrial,
       color,
+      logo,
+      annualPrice: cycle !== 'yearly' && Number(annualPrice.replace(',', '.')) > 0 ? Number(annualPrice.replace(',', '.')) : null,
       sharedWith: shared ? sharedWith : [],
       shareMode: shared ? shareMode : 'split',
     };
@@ -107,13 +113,25 @@ export default function EditSubscription() {
         <Stack.Screen options={{ title: 'Add subscription', headerLeft: closeButton }} />
         <ScrollView contentContainerStyle={[styles.content, { paddingTop: space.md, paddingBottom: 48 }]} keyboardShouldPersistTaps="handled">
           <Input placeholder="Search services or type a name" value={query} onChangeText={setQuery} autoFocus={Platform.OS === 'web'} />
+          <Pressable onPress={() => router.replace('/smart-add')} style={[styles.listRow, { borderBottomColor: t.border }]}>
+            <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: t.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="star" size={18} color={t.accent} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <T>Smart add</T>
+              <T v="small" faint>
+                From a screenshot, an email or a CSV file
+              </T>
+            </View>
+            <Icon name="chevronRight" size={18} color={t.textFaint} />
+          </Pressable>
           <Pressable onPress={() => applyPreset(null)} style={[styles.listRow, { borderBottomColor: t.border }]}>
             <Avatar name={query || '+'} color={t.textFaint} size={36} />
             <T style={{ flex: 1 }}>{query.trim() ? `Add “${query.trim()}”` : 'Custom subscription'}</T>
           </Pressable>
           {presets.map((p) => (
             <Pressable key={p.name} onPress={() => applyPreset(p)} style={({ pressed }) => [styles.listRow, { borderBottomColor: t.border, opacity: pressed ? 0.6 : 1 }]}>
-              <Avatar name={p.name} color={p.color} size={36} />
+              <Avatar name={p.name} color={p.color} size={36} logo={p.logo} />
               <T style={{ flex: 1 }}>{p.name}</T>
             </Pressable>
           ))}
@@ -162,6 +180,12 @@ export default function EditSubscription() {
             </T>
           </View>
         </Field>
+
+        {cycle !== 'yearly' ? (
+          <Field label="Annual plan price (optional)" hint="If the service offers a yearly plan, enter its price and Insights will show what you'd save by switching.">
+            <Input value={annualPrice} onChangeText={setAnnualPrice} placeholder={`Yearly price in ${currency}`} keyboardType="decimal-pad" />
+          </Field>
+        ) : null}
 
         <Field label={isTrial ? 'Trial ends / first charge' : 'Next renewal'}>
           <DateField value={next} onChange={setNext} />
@@ -277,7 +301,9 @@ export default function EditSubscription() {
         <Button label={existing ? 'Save changes' : 'Add subscription'} onPress={save} disabled={!valid} />
         {existing && existing.amount !== amountNum && valid ? (
           <T v="small" faint style={{ marginTop: space.sm, textAlign: 'center' }}>
-            The price change applies from today. Earlier charges keep the old price in your history.
+            {amountNum > existing.amount
+              ? `Price rise of ${Math.round(((amountNum - existing.amount) / existing.amount) * 100)}% from today. It'll show under Price changes in Insights.`
+              : 'The price change applies from today. Earlier charges keep the old price in your history.'}
           </T>
         ) : null}
       </ScrollView>

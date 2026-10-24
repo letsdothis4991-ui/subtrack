@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { addDays, parseISO, today } from '../lib/dates';
+import { addDays, addMonths, parseISO, today } from '../lib/dates';
 import { billingDates } from '../lib/calc';
 import { convert, formatMoney } from '../lib/currency';
 import type { Rates, Settings, Subscription } from '../lib/types';
@@ -56,7 +56,19 @@ export async function rescheduleReminders(subs: Subscription[], settings: Settin
   }
   pending.sort((a, b) => a.at.getTime() - b.at.getTime());
 
-  for (const { at, sub, renewal } of pending.slice(0, MAX_SCHEDULED)) {
+  // Monthly check-in nudge on the 1st of the next two months.
+  if (subs.length > 0) {
+    for (const k of [1, 2]) {
+      const at = parseISO(addMonths(t.slice(0, 7) + '-01', k));
+      at.setHours(settings.reminderHour, 0, 0, 0);
+      await Notifications.scheduleNotificationAsync({
+        content: { title: 'Monthly check-in', body: 'Still using all your subscriptions? Take 30 seconds to spot what to cancel.', data: { route: '/check-in' } },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: at, channelId: CHANNEL },
+      });
+    }
+  }
+
+  for (const { at, sub, renewal } of pending.slice(0, MAX_SCHEDULED - 2)) {
     const days = sub.reminderDays ?? 0;
     const when = days === 0 ? 'today' : days === 1 ? 'tomorrow' : `in ${days} days`;
     const price = formatMoney(sub.amount, sub.currency);
@@ -73,11 +85,12 @@ export async function rescheduleReminders(subs: Subscription[], settings: Settin
   }
 }
 
-/** Subscription id from a tapped reminder, if any. */
-export function addReminderTapListener(onOpen: (subscriptionId: string) => void): () => void {
+/** Route to open when a reminder is tapped. */
+export function addReminderTapListener(onOpen: (route: string) => void): () => void {
   const sub = Notifications.addNotificationResponseReceivedListener((r) => {
-    const id = r.notification.request.content.data?.subscriptionId;
-    if (typeof id === 'string') onOpen(id);
+    const data = r.notification.request.content.data ?? {};
+    if (typeof data.route === 'string') onOpen(data.route);
+    else if (typeof data.subscriptionId === 'string') onOpen(`/subscription/${data.subscriptionId}`);
   });
   return () => sub.remove();
 }

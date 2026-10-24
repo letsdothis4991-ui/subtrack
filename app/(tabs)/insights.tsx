@@ -5,10 +5,12 @@ import { Donut, HBars, Legend, MonthBars, Strip, type Slice } from '../../src/co
 import { Avatar, Card, Empty, Button, Screen, Section, Segmented, T } from '../../src/components/ui';
 import { useOverview } from '../../src/hooks';
 import { categoryTotals, charges, isShared, lifetimeSpend, monthlyCost, monthlySeries, myShareFactor, owedFactor } from '../../src/lib/calc';
-import { formatMoney } from '../../src/lib/currency';
+import { convert, formatMoney } from '../../src/lib/currency';
+import { annualSaving, cancelReason, outstanding, recentPriceChanges } from '../../src/lib/insights';
 import { addDays, formatDate, today } from '../../src/lib/dates';
 import { AdBanner } from '../../src/services/ads';
 import { categoryOf } from '../../src/store';
+import { logoOf } from '../../src/lib/logo';
 import { shareSummary } from '../../src/lib/share';
 import { space, useTheme } from '../../src/theme';
 
@@ -37,9 +39,16 @@ export default function InsightsScreen() {
     }));
     const shared = o.active.filter((v) => isShared(v.sub));
     const fullMonthly = (v: (typeof o.active)[number]) => monthlyCost(v.sub, o.base, o.rates);
-    const owed = shared.reduce((s, v) => s + fullMonthly(v) * owedFactor(v.sub), 0);
+    const owed = shared.reduce((s, v) => s + convert(outstanding(v.sub), v.sub.currency, o.base, o.rates), 0);
     const sharingSaves = shared.reduce((s, v) => s + fullMonthly(v) * (1 - myShareFactor(v.sub)), 0);
-    return { cats, series, upcoming, lastYear, lifetime, saved, byCycle, shared, owed, sharingSaves, fullMonthly };
+    const candidates = o.active.map((v) => ({ v, reason: cancelReason(v.sub) })).filter((x) => x.reason != null);
+    const priceRises = recentPriceChanges(o.subscriptions.filter((x) => !x.endDate), 12).filter((c) => c.pct > 0);
+    const annual = o.active
+      .map((v) => ({ v, saving: annualSaving(v.sub) }))
+      .filter((x): x is { v: (typeof o.active)[number]; saving: number } => x.saving != null)
+      .map((x) => ({ ...x, savingBase: convert(x.saving, x.v.sub.currency, o.base, o.rates) }))
+      .sort((a, b) => b.savingBase - a.savingBase);
+    return { cats, series, upcoming, lastYear, lifetime, saved, byCycle, shared, owed, sharingSaves, fullMonthly, candidates, priceRises, annual };
   }, [o, t]);
 
   if (o.subscriptions.length === 0) {
@@ -74,6 +83,51 @@ export default function InsightsScreen() {
         <Stat label={`Avg / sub`} value={formatMoney(o.active.length ? total / o.active.length : 0, o.base, { compact: true })} />
         <Stat label="Daily" value={formatMoney(o.monthly / 30.44, o.base)} />
       </View>
+
+      {data.candidates.length || data.priceRises.length || data.annual.length ? (
+        <Section title="Ways to save">
+          <Card style={{ paddingVertical: space.xs }}>
+            {data.candidates.map(({ v, reason }, i) => (
+              <SaveRow
+                key={`c-${v.sub.id}`}
+                first={i === 0}
+                tone="danger"
+                title={`Cancel ${v.sub.name}?`}
+                body={`${reason === 'unused' ? "You didn't use it last month" : 'Only used sometimes lately'}${v.sub.notes ? ` · "${v.sub.notes}"` : ''}`}
+                value={`${formatMoney(v.monthly * 12, o.base, { compact: true })}/yr`}
+                onPress={() => router.push(`/subscription/${v.sub.id}`)}
+              />
+            ))}
+            {data.annual.map(({ v, savingBase }, i) => (
+              <SaveRow
+                key={`a-${v.sub.id}`}
+                first={i === 0 && data.candidates.length === 0}
+                tone="accent"
+                title={`Switch ${v.sub.name} to annual`}
+                body={`Annual plan ${formatMoney(v.sub.annualPrice!, v.sub.currency)} vs ${formatMoney(v.sub.amount, v.sub.currency)} ${v.sub.cycle}`}
+                value={`save ${formatMoney(savingBase, o.base, { compact: true })}/yr`}
+                onPress={() => router.push(`/subscription/${v.sub.id}`)}
+              />
+            ))}
+            {data.priceRises.map((c, i) => (
+              <SaveRow
+                key={`p-${c.sub.id}-${c.date}`}
+                first={i === 0 && data.candidates.length === 0 && data.annual.length === 0}
+                tone="warn"
+                title={`${c.sub.name} went up ${Math.round(c.pct * 100)}%`}
+                body={`${formatMoney(c.from, c.sub.currency)} → ${formatMoney(c.to, c.sub.currency)} on ${formatDate(c.date)}. Still worth it?`}
+                value={`+${formatMoney(convert((c.to - c.from) * ({ weekly: 52, monthly: 12, quarterly: 4, yearly: 1 }[c.sub.cycle] / c.sub.interval), c.sub.currency, o.base, o.rates), o.base, { compact: true })}/yr`}
+                onPress={() => router.push(`/subscription/${c.sub.id}`)}
+              />
+            ))}
+          </Card>
+          {data.candidates.length === 0 ? (
+            <T v="small" faint style={{ marginTop: space.sm }}>
+              Do the monthly check-in on the Subscriptions tab and anything you don't use will show up here.
+            </T>
+          ) : null}
+        </Section>
+      ) : null}
 
       <Section title="By category">
         <Card style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xl, alignItems: 'center', justifyContent: 'center' }}>
@@ -113,7 +167,7 @@ export default function InsightsScreen() {
                 <T v="small" muted style={{ width: 52 }}>
                   {formatDate(c.date)}
                 </T>
-                <Avatar name={c.sub.name} color={c.sub.color ?? categoryOf(o.categories, c.sub.categoryId).color} size={24} />
+                <Avatar name={c.sub.name} color={c.sub.color ?? categoryOf(o.categories, c.sub.categoryId).color} size={24} logo={logoOf(c.sub)} />
                 <T v="small" style={{ flex: 1 }} numberOfLines={1}>
                   {c.sub.name}
                 </T>
@@ -128,7 +182,7 @@ export default function InsightsScreen() {
         <Section title="Shared">
           <View style={{ flexDirection: 'row', gap: space.sm }}>
             <Stat label="Sharing saves you" value={`${formatMoney(data.sharingSaves * mult, o.base, { compact: true })}`} />
-            <Stat label="Others owe you" value={`${formatMoney(data.owed * mult, o.base, { compact: true })}`} />
+            <Stat label="Owed to you" value={`${formatMoney(data.owed * mult, o.base, { compact: true })}`} />
           </View>
           <Card style={{ marginTop: space.sm, paddingVertical: space.xs }}>
             {data.shared.map((v, i) => (
@@ -137,7 +191,7 @@ export default function InsightsScreen() {
                 onPress={() => router.push(`/subscription/${v.sub.id}`)}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: 10, borderTopWidth: i ? 1 : 0, borderTopColor: t.border }}
               >
-                <Avatar name={v.sub.name} color={v.sub.color ?? categoryOf(o.categories, v.sub.categoryId).color} size={28} />
+                <Avatar name={v.sub.name} color={v.sub.color ?? categoryOf(o.categories, v.sub.categoryId).color} size={28} logo={logoOf(v.sub)} />
                 <View style={{ flex: 1 }}>
                   <T v="small" numberOfLines={1}>
                     {v.sub.name}
@@ -202,5 +256,26 @@ function Stat({ label, value }: { label: string; value: string }) {
         {value}
       </T>
     </Card>
+  );
+}
+
+function SaveRow({ title, body, value, tone, first, onPress }: { title: string; body: string; value: string; tone: 'danger' | 'accent' | 'warn'; first: boolean; onPress: () => void }) {
+  const t = useTheme();
+  const color = tone === 'danger' ? t.danger : tone === 'warn' ? t.warn : t.accent;
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: 12, borderTopWidth: first ? 0 : 1, borderTopColor: t.border, opacity: pressed ? 0.6 : 1 })}>
+      <View style={{ width: 4, alignSelf: 'stretch', borderRadius: 2, backgroundColor: color }} />
+      <View style={{ flex: 1 }}>
+        <T v="small" style={{ fontWeight: '600' }}>
+          {title}
+        </T>
+        <T v="small" muted numberOfLines={2}>
+          {body}
+        </T>
+      </View>
+      <T v="small" color={color} style={{ fontWeight: '600' }}>
+        {value}
+      </T>
+    </Pressable>
   );
 }

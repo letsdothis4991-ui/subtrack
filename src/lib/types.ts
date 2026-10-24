@@ -6,6 +6,9 @@
  */
 export type ShareMode = 'split' | 'i_pay' | 'they_pay';
 
+/** Monthly check-in answer: how much did I use it? */
+export type Usage = 'often' | 'sometimes' | 'never';
+
 export type Cycle = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 
 /** An ISO calendar date, `YYYY-MM-DD`, in the user's local calendar. */
@@ -47,8 +50,18 @@ export interface Subscription {
   /** Names of the people the subscription is shared with (not including me). */
   sharedWith: string[];
   shareMode: ShareMode;
+  /** For i_pay: renewal date → names of people who have paid me for that renewal. */
+  settlements: Record<ISODate, string[]>;
+  /** Monthly check-ins, keyed by `YYYY-MM`. */
+  usage: Record<string, Usage>;
+  /** Price of the annual plan, if the service offers one (for savings tips). Same currency. */
+  annualPrice: number | null;
+  /** simple-icons slug for the service logo. */
+  logo: string | null;
   priceHistory: PricePoint[];
   createdAt: string;
+  /** Last local edit; newest wins when syncing. */
+  updatedAt: string;
 }
 
 export interface Category {
@@ -57,6 +70,7 @@ export interface Category {
   color: string;
   /** Monthly budget in base currency; null = none. */
   budget: number | null;
+  updatedAt?: string;
 }
 
 export type ThemePref = 'system' | 'light' | 'dark';
@@ -69,7 +83,10 @@ export interface Settings {
   reminderHour: number;
   defaultReminderDays: number | null;
   theme: ThemePref;
-  adsRemoved: boolean;
+  /** SubTrack Plus unlocked (no ads, smart add). */
+  plus: boolean;
+  /** Month (`YYYY-MM`) of the last completed check-in. */
+  lastCheckIn: string | null;
   /** Totals, charts and budgets count only my share of shared subscriptions. */
   countMyShareOnly: boolean;
 }
