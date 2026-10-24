@@ -105,8 +105,7 @@ export function PlusSection() {
           <T v="bodyStrong">{plus ? 'You have Plus. Thank you!' : 'One payment, yours for good'}</T>
         </View>
         {[
-          'No ads',
-          'Smart add: paste a billing email and SubTrack adds the subscriptions',
+          'No ads, anywhere in the app',
           'Supports an independent, private app',
         ].map((line) => (
           <View key={line} style={{ flexDirection: 'row', gap: space.sm }}>

@@ -113,14 +113,14 @@ export default function EditSubscription() {
         <Stack.Screen options={{ title: 'Add subscription', headerLeft: closeButton }} />
         <ScrollView contentContainerStyle={[styles.content, { paddingTop: space.md, paddingBottom: 48 }]} keyboardShouldPersistTaps="handled">
           <Input placeholder="Search services or type a name" value={query} onChangeText={setQuery} autoFocus={Platform.OS === 'web'} />
-          <Pressable onPress={() => router.replace('/smart-add')} style={[styles.listRow, { borderBottomColor: t.border }]}>
+          <Pressable onPress={() => router.replace('/import')} style={[styles.listRow, { borderBottomColor: t.border }]}>
             <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: t.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="star" size={18} color={t.accent} />
+              <Icon name="upload" size={18} color={t.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <T>Smart add</T>
+              <T>Import from CSV</T>
               <T v="small" faint>
-                From a billing email or a CSV file
+                Add many at once from a spreadsheet
               </T>
             </View>
             <Icon name="chevronRight" size={18} color={t.textFaint} />

@@ -3,7 +3,7 @@ import { addMonths, nthBilling, today } from './dates';
 import { PRESETS } from './presets';
 import type { Category, Cycle, ISODate } from './types';
 
-/** A subscription found by CSV import or smart add, before the user confirms it. */
+/** A subscription found by CSV import, before the user confirms it. */
 export interface Draft {
   name: string;
   amount: number;

@@ -15,14 +15,14 @@ A minimalist subscription tracker for Android and the web, built from one Expo /
 - **Current and past subscriptions**: "Mark as cancelled" keeps the history ("Disney+ · $13.99/mo · Jan 2024 – Jun 2026 · paid $390"), plus price-change history
 - **Shared subscriptions**: who you share with, and whether you split the cost, pay for everyone (shows what you're owed) or someone else pays. Totals can count only your share
 - **Cloud sync** (optional): sign in with an emailed 6-digit code (or Google on the web) and your data syncs between the phone app and the website. Supabase with row-level security; newest-edit-wins merge with delete tombstones
-- **Smart add**: import a CSV (free), or paste a billing email and Claude lists the subscriptions for you to confirm (Plus)
+- **CSV import**: add many subscriptions at once from a spreadsheet, with a review step
 - **Monthly check-in**: "Still using it?" (often / sometimes / not at all). Unused subscriptions show up under **Ways to save** with your "why I have it" note
 - **Ways to save**: cancel candidates, savings from switching to an annual plan, and alerts for price rises in the last 12 months
 - **Service logos** for 29 popular services (simple-icons), with coloured initials as the fallback
 - **Home-screen widget** (Android): monthly total and next three renewals
 - **Settle-up** for plans you pay for: tick off who has paid for each renewal, see what's owed, and send a reminder through the share sheet
 - **Data**: works fully offline without an account; JSON backup/restore and CSV export
-- **SubTrack Plus**: a one-off purchase that removes ads and unlocks smart add. Free users see one anchored AdMob banner (Subscriptions and Insights tabs only) with GDPR/US consent. No ads on the web
+- **SubTrack Plus**: a one-off purchase that removes ads. Free users see one anchored AdMob banner (Subscriptions and Insights tabs only) with GDPR/US consent. No ads on the web
 
 ## Run it
 
@@ -55,12 +55,12 @@ app/                 screens (Expo Router)
   (tabs)/            Subscriptions, Insights, Budget, Settings
   edit.tsx           add/edit form + service picker
   subscription/[id]  detail (settle-up, price history)
-  smart-add.tsx      CSV / pasted-email import
+  import.tsx         CSV import
   check-in.tsx       monthly usage check-in
 src/lib/             pure logic: dates, billing maths, currency, sync merge, CSV, insights (unit tested)
-src/services/        platform code: notifications, ads, purchases, files, sync, smart add (*.web.ts = web version)
+src/services/        platform code: notifications, ads, purchases, files, sync (*.web.ts = web version)
 src/widget/          Android home-screen widget
-supabase/            database schema and edge functions (smart add via Claude, account deletion)
+supabase/            database schema and the account-deletion edge function
 src/components/      UI kit and charts (no chart library; SVG + Views)
 src/store.ts         zustand store persisted to AsyncStorage / localStorage
 ```
@@ -70,6 +70,6 @@ src/store.ts         zustand store persisted to AsyncStorage / localStorage
 - [Competitor review](docs/COMPETITOR_REVIEW.md): the top 5 trackers this app is modelled on
 - [Suggested improvements](docs/IMPROVEMENTS.md)
 - [Launch guide (Google Play, step by step)](docs/LAUNCH_GUIDE.md)
-- [Cloud setup (Supabase + Claude)](docs/CLOUD_SETUP.md)
+- [Cloud setup (Supabase)](docs/CLOUD_SETUP.md)
 - [Privacy policy](docs/PRIVACY.md)
 - [Store listing copy](docs/STORE_LISTING.md)

@@ -83,7 +83,7 @@ export interface Settings {
   reminderHour: number;
   defaultReminderDays: number | null;
   theme: ThemePref;
-  /** SubTrack Plus unlocked (no ads, smart add). */
+  /** SubTrack Plus unlocked (no ads). */
   plus: boolean;
   /** Month (`YYYY-MM`) of the last completed check-in. */
   lastCheckIn: string | null;

@@ -2,7 +2,7 @@
 
 Plan for **3–4 weeks** end to end. Most of that is Google's mandatory 14-day closed test for new personal developer accounts. Steps marked ⏱ involve waiting on Google.
 
-Costs: Google Play developer account $25 one-off. Supabase free tier. Claude API pay-as-you-go (set a spend limit). AdMob is free and pays you.
+Costs: Google Play developer account $25 one-off. Everything else starts free (Supabase free tier, GitHub, AdMob, which pays you).
 
 ---
 
@@ -20,8 +20,8 @@ Costs: Google Play developer account $25 one-off. Supabase free tier. Claude API
 3. **Ad units → Add → Banner** → name it "Main banner". Copy the **Ad unit ID** (`ca-app-pub-…/…`).
 4. **Privacy & messaging**: create a **GDPR** message and a **US state regulations** message for the app and publish both. The app already shows them.
 
-### 3. Cloud features (sync + smart add)
-Follow **[CLOUD_SETUP.md](CLOUD_SETUP.md)**: about 20 minutes. You'll need a Claude API key from https://console.anthropic.com.
+### 3. Cloud sync
+Follow **[CLOUD_SETUP.md](CLOUD_SETUP.md)**: about 15 minutes.
 
 ---
 
@@ -76,7 +76,7 @@ Play Console → **Create app** → name "SubTrack – Subscription Tracker", de
 Needs the uploaded build from step 9 (it declares billing).
 1. Set up a **payments profile** if prompted (**Settings → Payments profile**).
 2. **Monetise with Play → Products → In-app products → Create product**.
-3. Product ID **`subtrack_plus`** (must match exactly), name "SubTrack Plus", description "No ads and smart add, forever." Set a price (suggestion: $4.99; it's one-off). **Save → Activate**.
+3. Product ID **`subtrack_plus`** (must match exactly), name "SubTrack Plus", description "Remove ads, forever." Set a price (suggestion: $4.99; it's one-off). **Save → Activate**.
 4. To test purchases without paying: **Settings → License testing** → add your Gmail.
 
 ### 11. Store listing
@@ -88,7 +88,7 @@ Needs the uploaded build from step 9 (it declares billing).
 
 ### 12. App content (Policy → App content): answer every item
 - **Privacy policy**: `https://<user>.github.io/<repo>/privacy.html`
-- **App access**: "All functionality is available without special access" is *not* quite true (smart add needs sign-in and Plus). Choose **All or some functionality is restricted**, and explain: "Sign-in is optional and uses a one-time code emailed to the user. Smart add requires the SubTrack Plus purchase. Everything else works without an account." If review asks for access, give them a test account (an email inbox you share) and a promo code for Plus (**Monetise → Promo codes**).
+- **App access**: choose **All functionality is available without special access**. Sign-in is optional (only for sync) and the app works fully without it.
 - **Ads**: Yes, the app contains ads.
 - **Content rating**: questionnaire → category Utility/Productivity, no to violence/sexual/etc. → expect "Everyone" / PEGI 3.
 - **Target audience**: 18 and over (simplest with ads; avoids the Families policy).
@@ -99,7 +99,6 @@ Needs the uploaded build from step 9 (it declares billing).
   |---|---|---|
   | Email address | Yes (optional) | Account management; not shared |
   | Other user-generated content (your subscriptions) | Yes (optional, when syncing) | App functionality; not shared |
-  | Other user-generated content (text pasted into smart add) | Yes (optional) | App functionality; **processed ephemerally**; shared with a service provider (Anthropic) |
   | Device or other IDs | Yes | Advertising, via AdMob; shared with Google |
   | App interactions / diagnostics | Yes | Via AdMob for ads and analytics |
   | Approximate location | Yes | From IP, via AdMob |
@@ -131,5 +130,5 @@ New **personal** developer accounts must run a closed test with **at least 12 te
 
 ## After launch
 - Watch **Android vitals** (crashes/ANRs) and reply to reviews in Play Console.
-- Keep the Claude API spend limit sensible, and watch Supabase usage (free tier: 50k monthly users, 500 MB database).
+- Watch Supabase usage (free tier: 50k monthly users, 500 MB database).
 - Each update: bump `version` + `android.versionCode`, push to `main`, download the AAB, and upload it as a new production release.

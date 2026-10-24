@@ -3,7 +3,7 @@ name: Android build
 # The bundle is signed with your upload key when these repository secrets exist:
 #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
 # Optional: ADMOB_ANDROID_APP_ID and EXPO_PUBLIC_ADMOB_BANNER_ID for live ads (test ads otherwise),
-#           EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY for sync and smart add.
+#           EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY for sync.
 on:
   push:
     branches: [main]

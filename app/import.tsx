@@ -2,38 +2,28 @@ import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { Icon } from '../src/components/Icon';
-import { Avatar, Button, Card, Input, Segmented, T, notify, styles } from '../src/components/ui';
+import { Avatar, Button, Card, T, notify, styles } from '../src/components/ui';
 import { formatMoney } from '../src/lib/currency';
 import { formatDate } from '../src/lib/dates';
 import { draftNextRenewal, draftsFromCSV, type Draft } from '../src/lib/importing';
 import { logoOf } from '../src/lib/logo';
 import { PRESETS } from '../src/lib/presets';
 import { pickTextFile } from '../src/services/files';
-import { extractSubscriptions } from '../src/services/smartAdd';
-import { cloudEnabled } from '../src/services/supabase';
-import { useSync } from '../src/services/sync';
 import { categoryOf, useStore } from '../src/store';
 import { space, useTheme } from '../src/theme';
 
-type Mode = 'text' | 'csv';
-
-export default function SmartAdd() {
+/** Import subscriptions from a CSV file, with a review step before anything is added. */
+export default function ImportCsv() {
   const t = useTheme();
   const router = useRouter();
   const settings = useStore((s) => s.settings);
   const categories = useStore((s) => s.categories);
   const existing = useStore((s) => s.subscriptions);
   const addSubscription = useStore((s) => s.addSubscription);
-  const signedIn = useSync((s) => s.status !== 'signed-out');
 
-  const [mode, setMode] = useState<Mode>('text');
-  const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [drafts, setDrafts] = useState<Draft[] | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
-
-  const aiMode = mode !== 'csv';
-  const aiBlocked = aiMode && (!cloudEnabled ? 'unavailable' : !settings.plus ? 'plus' : !signedIn ? 'signin' : null);
 
   const showResults = (found: Draft[], note?: string) => {
     setDrafts(found);
@@ -53,12 +43,6 @@ export default function SmartAdd() {
       setBusy(false);
     }
   };
-
-  const analyse = () =>
-    run(async () => {
-      const found = await extractSubscriptions(text, settings.baseCurrency);
-      showResults(found, found.length ? undefined : 'No subscriptions found. Try pasting more of the email.');
-    });
 
   const importCsv = () =>
     run(async () => {
@@ -101,60 +85,30 @@ export default function SmartAdd() {
 
   return (
     <View style={{ flex: 1, backgroundColor: t.bg }}>
-      <Stack.Screen options={{ title: 'Smart add' }} />
+      <Stack.Screen options={{ title: 'Import from CSV' }} />
       <ScrollView contentContainerStyle={[styles.content, { paddingTop: space.md, paddingBottom: 64 }]}>
         {drafts == null ? (
           <>
-            <Segmented<Mode>
-              value={mode}
-              onChange={setMode}
-              options={[
-                { value: 'text', label: 'Paste email' },
-                { value: 'csv', label: 'CSV file' },
-              ]}
-            />
-
-            {mode === 'text' ? (
-              <View style={{ marginTop: space.lg, gap: space.md }}>
-                <T muted>Paste a billing email, receipt or a list of your subscriptions in any format.</T>
-                <Input value={text} onChangeText={setText} multiline placeholder="Paste here…" style={{ minHeight: 200 }} />
-              </View>
-            ) : (
-              <View style={{ marginTop: space.lg, gap: space.md }}>
-                <T muted>
-                  Import a spreadsheet (CSV) with at least Name and Amount columns. Cycle, Currency, Next renewal and Category are picked up when present. Files
-                  exported from SubTrack work too.
+            <View style={{ gap: space.md }}>
+              <T muted>
+                Import a spreadsheet (CSV) with at least Name and Amount columns. Cycle, Currency, Next renewal and Category are picked up when present. Files
+                exported from SubTrack work too.
+              </T>
+              <Card style={{ backgroundColor: t.surfaceAlt, borderColor: t.surfaceAlt }}>
+                <T v="small" muted style={{ fontFamily: 'monospace' }}>
+                  Name,Amount,Currency,Cycle,Next renewal{'\n'}Netflix,15.49,USD,monthly,2026-11-05{'\n'}Spotify,169.99,USD,yearly,2027-02-01
                 </T>
-                <Card style={{ backgroundColor: t.surfaceAlt, borderColor: t.surfaceAlt }}>
-                  <T v="small" muted style={{ fontFamily: 'monospace' }}>
-                    Name,Amount,Currency,Cycle,Next renewal{'\n'}Netflix,15.49,USD,monthly,2026-11-05{'\n'}Spotify,169.99,USD,yearly,2027-02-01
-                  </T>
-                </Card>
-              </View>
-            )}
+              </Card>
+            </View>
 
             <View style={{ marginTop: space.xl }}>
-              {aiBlocked ? (
-                <Card style={{ gap: space.sm }}>
-                  <T v="bodyStrong">{aiBlocked === 'unavailable' ? 'Not available in this build' : aiBlocked === 'plus' ? 'Part of SubTrack Plus' : 'Sign in to use smart add'}</T>
-                  <T v="small" muted>
-                    {aiBlocked === 'unavailable'
-                      ? 'Reading emails needs the cloud features to be set up. CSV import works without them.'
-                      : aiBlocked === 'plus'
-                        ? 'Plus adds email reading, removes ads and supports development. CSV import is free.'
-                        : 'Smart add runs through your SubTrack account so your Plus purchase and data stay together.'}
-                  </T>
-                  {aiBlocked !== 'unavailable' ? <Button small label={aiBlocked === 'plus' ? 'See SubTrack Plus' : 'Sign in'} onPress={() => router.push('/settings')} /> : null}
-                </Card>
-              ) : busy ? (
+              {busy ? (
                 <View style={{ alignItems: 'center', gap: space.sm, paddingVertical: space.lg }}>
                   <ActivityIndicator color={t.accent} />
-                  <T muted>{aiMode ? 'Reading…' : 'Importing…'}</T>
+                  <T muted>Importing…</T>
                 </View>
-              ) : mode === 'csv' ? (
-                <Button icon="upload" label="Choose CSV file" onPress={importCsv} />
               ) : (
-                <Button label="Find subscriptions" icon="search" onPress={analyse} disabled={!text.trim()} />
+                <Button icon="upload" label="Choose CSV file" onPress={importCsv} />
               )}
             </View>
           </>

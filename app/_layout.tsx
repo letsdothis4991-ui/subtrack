@@ -72,7 +72,7 @@ export default function RootLayout() {
             <Stack.Screen name="edit" options={{ presentation: 'modal', title: 'Subscription' }} />
             <Stack.Screen name="subscription/[id]" options={{ title: '' }} />
             <Stack.Screen name="categories" options={{ title: 'Categories' }} />
-            <Stack.Screen name="smart-add" options={{ presentation: 'modal', title: 'Smart add' }} />
+            <Stack.Screen name="import" options={{ presentation: 'modal', title: 'Import from CSV' }} />
             <Stack.Screen name="check-in" options={{ presentation: 'modal', title: 'Monthly check-in' }} />
           </Stack>
         </>

@@ -164,7 +164,7 @@ export default function SettingsScreen() {
           <Row icon="download" label="Export backup (JSON)" onPress={exportJson} />
           <Row icon="download" label="Export spreadsheet (CSV)" onPress={exportCsv} />
           <Row icon="upload" label="Import backup" onPress={doImport} />
-          <Row icon="star" label="Smart add (email or CSV)" onPress={() => router.push('/smart-add')} />
+          <Row icon="upload" label="Import from CSV" onPress={() => router.push('/import')} />
           <Row icon="trash" label="Erase all data" danger onPress={eraseAll} />
         </Card>
         <T v="small" faint style={{ marginTop: space.sm }}>

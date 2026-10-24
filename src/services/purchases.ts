@@ -4,7 +4,7 @@ import { useIAP } from 'expo-iap';
 import { useStore } from '../store';
 
 /**
- * One-time, non-consumable product that unlocks SubTrack Plus.
+ * One-time, non-consumable product that unlocks SubTrack Plus (removes ads).
  * Create it in Play Console → Monetize → In-app products with this exact ID.
  */
 export const PLUS_SKU = 'subtrack_plus';
