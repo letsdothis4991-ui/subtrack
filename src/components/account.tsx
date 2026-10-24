@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { formatDate } from '../lib/dates';
-import { purchasesSupported, usePlusPurchase } from '../services/purchases';
+import { openRedeem, purchasesSupported, restorePlus, usePlusPurchase } from '../services/purchases';
 import { cloudEnabled } from '../services/supabase';
 import { deleteAccount, googleSignInSupported, sendCode, signInWithGoogle, signOut, syncNow, useSync, verifyCode } from '../services/sync';
 import { useStore } from '../store';
@@ -130,10 +130,30 @@ export function PlusSection() {
 
 function BuyButtons() {
   const iap = usePlusPurchase();
+  const [checking, setChecking] = useState(false);
   return (
     <View style={{ gap: space.sm, marginTop: space.xs }}>
       <Button label={iap.available ? `Get Plus · ${iap.price}` : 'Plus unavailable right now'} disabled={!iap.available} onPress={iap.buy} />
-      <Button kind="ghost" small label="Restore purchase" onPress={iap.restore} />
+      <View style={{ flexDirection: 'row', gap: space.sm }}>
+        <Button kind="secondary" small icon="tag" label="Redeem a code" onPress={() => openRedeem()} style={{ flex: 1 }} />
+        <Button
+          kind="secondary"
+          small
+          icon="restore"
+          label={checking ? 'Checking…' : 'Restore'}
+          disabled={checking}
+          style={{ flex: 1 }}
+          onPress={async () => {
+            setChecking(true);
+            const found = await restorePlus();
+            setChecking(false);
+            notify(found ? 'Plus restored' : 'No Plus purchase found', found ? 'Thanks for supporting SubTrack!' : 'Make sure you’re signed in to the same Google account you bought or redeemed Plus with.');
+          }}
+        />
+      </View>
+      <T v="small" faint>
+        Got a code from a forum or creator? Tap Redeem a code, enter it in Google Play, then come back here. Plus unlocks automatically.
+      </T>
     </View>
   );
 }

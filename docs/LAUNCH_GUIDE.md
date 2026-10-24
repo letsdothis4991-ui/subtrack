@@ -79,6 +79,19 @@ Needs the uploaded build from step 9 (it declares billing).
 3. Product ID **`subtrack_plus`** (must match exactly), name "SubTrack Plus", description "No ads, renewal calendar, year in review, colour themes and widget styles. One payment, forever." Set a price: **$1.99 launch price**, raising to $2.99 after a month or two (it's a one-off purchase). **Save → Activate**.
 4. To test purchases without paying: **Settings → License testing** → add your Gmail.
 
+### 10b. Promo codes for forums and creators (optional)
+Give away free Plus without anyone paying:
+1. **Monetise with Play → Promo codes → Create promotion**, pick the `subtrack_plus` product, and name it after where the codes are going (e.g. "Reddit launch", "Creator: Sam") so you can see which ones get used.
+2. Choose how many codes and an end date. Google caps codes per quarter; the console shows your allowance.
+3. Share each code, or a direct link: `https://play.google.com/redeem?code=YOURCODE`.
+4. People redeem it in Google Play (or from **Settings → SubTrack Plus → Redeem a code** in the app). When they return to SubTrack, Plus unlocks automatically, and the app acknowledges the purchase as Google requires.
+
+For **discounts**, Google Play doesn't support percent-off codes on one-off purchases; schedule a temporary sale price instead (e.g. $0.99 for launch week).
+
+**Track where installs come from** with a tagged link per forum or creator, e.g.
+`https://play.google.com/store/apps/details?id=com.reshpow.subtrack&referrer=utm_source%3Dreddit%26utm_campaign%3Dfrugal`.
+Installs show up by source under **Grow users → Acquisition reports**.
+
 ### 11. Store listing
 **Grow users → Store presence → Main store listing**. Copy text from **[STORE_LISTING.md](STORE_LISTING.md)**.
 - App icon 512×512: `assets/play-store-icon.png`

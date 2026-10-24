@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
-import { useIAP } from 'expo-iap';
+import { AppState, Linking, Platform } from 'react-native';
+import { finishTransaction, getAvailablePurchases, initConnection, useIAP } from 'expo-iap';
 import { useStore } from '../store';
 
 /**
@@ -46,4 +46,48 @@ export function usePlusPurchase() {
       }).catch(() => {}),
     restore: () => getAvailablePurchases().catch(() => {}),
   };
+}
+
+/**
+ * Looks for an existing Plus purchase (a reinstall, a new phone, or a promo code redeemed in the
+ * Play Store app) and unlocks Plus. Purchases made outside the app must be acknowledged within
+ * 3 days or Google refunds them, so unacknowledged ones are finished here too.
+ * Never removes Plus: a failed or offline check leaves it as it was.
+ */
+export async function restorePlus(): Promise<boolean> {
+  try {
+    await initConnection();
+    const purchases = await getAvailablePurchases();
+    const plus = purchases.find((p) => p.productId === PLUS_SKU);
+    if (!plus) return false;
+    if (Platform.OS === 'android' && 'isAcknowledgedAndroid' in plus && plus.isAcknowledgedAndroid === false) {
+      await finishTransaction({ purchase: plus, isConsumable: false });
+    }
+    if (!useStore.getState().settings.plus) useStore.getState().updateSettings({ plus: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Checks for Plus when the app starts and whenever it comes back to the foreground (e.g. after redeeming a code). */
+export function usePlusRestore() {
+  useEffect(() => {
+    if (!purchasesSupported) return;
+    let last = 0;
+    const check = () => {
+      if (Date.now() - last < 30_000) return;
+      last = Date.now();
+      restorePlus();
+    };
+    check();
+    const sub = AppState.addEventListener('change', (state) => state === 'active' && check());
+    return () => sub.remove();
+  }, []);
+}
+
+/** Opens Google Play's "Redeem code" screen (optionally pre-filled). */
+export function openRedeem(code?: string) {
+  const url = code ? `https://play.google.com/redeem?code=${encodeURIComponent(code)}` : 'https://play.google.com/redeem';
+  return Linking.openURL(url);
 }

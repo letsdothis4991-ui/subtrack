@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { addReminderTapListener, ensurePermission, rescheduleReminders } from '../src/services/notifications';
 import { ToastHost } from '../src/components/Toast';
+import { usePlusRestore } from '../src/services/purchases';
 import { noteAppOpen } from '../src/services/review';
 import { useAutoSync } from '../src/services/sync';
 import { refreshWidget } from '../src/widget';
@@ -42,6 +43,7 @@ function Effects() {
   useEffect(() => addReminderTapListener((route) => router.push(route as never)), [router]);
 
   useAutoSync();
+  usePlusRestore();
   useEffect(noteAppOpen, []);
 
   // Reminders need notification permission (Android 13+). Ask once there's something to remind about.
