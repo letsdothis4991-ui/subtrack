@@ -88,6 +88,15 @@
             }
           ]
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "extraProguardRules": "# Room databases (WorkManager's included) are created by reflection from their generated _Impl class.\n-keep class * extends androidx.room.RoomDatabase { <init>(); }\n-keep class androidx.work.impl.WorkDatabase_Impl { *; }\n-keep class androidx.work.** { *; }\n# Android home-screen widget library (loaded by name from the manifest).\n-keep class com.reactnativeandroidwidget.** { *; }\n-keep class com.reshpow.subtrack.** { *; }"
+          }
+        }
       ]
     ],
     "experiments": {
