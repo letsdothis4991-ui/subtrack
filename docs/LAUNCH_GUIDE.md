@@ -53,7 +53,7 @@ Repo → **Settings → Secrets and variables → Actions → New repository sec
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | from CLOUD_SETUP |
 
 ### 6. Turn on the web app and privacy page
-Repo → **Settings → Pages → Source: GitHub Actions**. After the next push, the web app is at `https://<your-user>.github.io/<repo>/` and the privacy policy at `…/<repo>/privacy.html`. Edit `docs/PRIVACY.md` first and replace `<your-support-email@example.com>` with a real address.
+Repo → **Settings → Pages → Source: GitHub Actions**. The web app is at https://letsdothis4991-ui.github.io/subtrack/ and the privacy policy at https://letsdothis4991-ui.github.io/subtrack/privacy.html (support email: letsdothis4991@gmail.com).
 
 ### 7. Build the release bundle
 1. Make sure `app.json` → `expo.android.package` is the ID you want forever (currently `com.reshpow.subtrack`).
@@ -87,7 +87,7 @@ Needs the uploaded build from step 9 (it declares billing).
 - **Store settings**: category **Finance**, tags, contact email, website = your web app URL
 
 ### 12. App content (Policy → App content): answer every item
-- **Privacy policy**: `https://<user>.github.io/<repo>/privacy.html`
+- **Privacy policy**: `https://letsdothis4991-ui.github.io/subtrack/privacy.html`
 - **App access**: choose **All functionality is available without special access**. Sign-in is optional (only for sync) and the app works fully without it.
 - **Ads**: Yes, the app contains ads.
 - **Content rating**: questionnaire → category Utility/Productivity, no to violence/sexual/etc. → expect "Everyone" / PEGI 3.
@@ -104,7 +104,7 @@ Needs the uploaded build from step 9 (it declares billing).
   | Approximate location | Yes | From IP, via AdMob |
   - Data is encrypted in transit: **Yes**
   - Users can request deletion: **Yes**, in-app (**Settings → Sync → Delete account**) and on the web
-- **Account deletion URL** (required because the app has accounts): `https://<user>.github.io/<repo>/`, with the note "Open Settings → Sync → Delete account, or email <support email>".
+- **Account deletion URL** (required because the app has accounts): `https://letsdothis4991-ui.github.io/subtrack/`, with the note "Open Settings → Sync → Delete account, or email letsdothis4991@gmail.com".
 
 ---
 

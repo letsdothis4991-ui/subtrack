@@ -26,4 +26,4 @@ Renewal reminders and the monthly check-in are scheduled locally on your device.
 SubTrack is not directed at children under 13.
 
 ## Changes and contact
-We'll update this page if anything changes. Questions or deletion requests: <your-support-email@example.com>
+We'll update this page if anything changes. Questions or deletion requests: letsdothis4991@gmail.com
