@@ -21,7 +21,10 @@ function Effects() {
 
   useEffect(() => {
     const age = rates.updatedAt ? Date.now() - new Date(rates.updatedAt).getTime() : Infinity;
-    if (age > RATES_MAX_AGE_MS) refreshRates();
+    if (age <= RATES_MAX_AGE_MS) return;
+    // Wait until startup has settled before the first network request.
+    const id = setTimeout(refreshRates, 3000);
+    return () => clearTimeout(id);
   }, []);
 
   // Keep scheduled reminders in sync with the data (debounced).
