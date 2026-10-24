@@ -26,7 +26,7 @@ SubTrack is a simple, private subscription tracker. No bank login, no account: j
 • Settle up shared plans: see who's paid and send a friendly reminder
 • Home-screen widget with your monthly total and next renewals
 • Optional free sync between your phone and the web app
-• Import from a CSV file. With Plus: snap a screenshot or paste a billing email and SubTrack adds the subscriptions for you
+• Import from a CSV file. With Plus: paste a billing email and SubTrack adds the subscriptions for you
 
 No bank login needed. A small banner keeps SubTrack free; SubTrack Plus removes it with one payment, no subscription.
 

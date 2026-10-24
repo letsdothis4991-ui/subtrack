@@ -11,7 +11,7 @@ Subscriptions, categories, budgets, notes, check-ins and settings are stored **o
 If you sign in to sync, we store your **email address** and a copy of your SubTrack data in our database (hosted by Supabase) so it can appear on your other devices. Only you can read it: access is restricted to your signed-in account. You can delete your account and the cloud copy at any time in **Settings → Sync → Delete account**; data on your devices stays until you erase it.
 
 ## Smart add (SubTrack Plus)
-When you use smart add, the screenshot or text you choose is sent over an encrypted connection to our server and then to Anthropic's Claude API to extract subscription details. We don't keep the screenshot or text after the request finishes; we keep only a count of requests to enforce a monthly limit. Anthropic processes the content under its [commercial terms and privacy policy](https://www.anthropic.com/legal/privacy) and does not use API data to train its models. Don't send screenshots that contain information you don't want processed.
+When you use smart add, the text you paste (for example a billing email) is sent over an encrypted connection to our server and then to Anthropic's Claude API to extract subscription details. We don't keep the text after the request finishes; we keep only a count of requests to enforce a monthly limit. Anthropic processes the content under its [commercial terms and privacy policy](https://www.anthropic.com/legal/privacy) and does not use API data to train its models. Don't paste anything you don't want processed.
 
 ## Exchange rates
 The app downloads public exchange rates from the Frankfurter API (api.frankfurter.app). The request contains no personal data.

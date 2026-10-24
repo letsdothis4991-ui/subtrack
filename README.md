@@ -15,7 +15,7 @@ A minimalist subscription tracker for Android and the web, built from one Expo /
 - **Current and past subscriptions**: "Mark as cancelled" keeps the history ("Disney+ · $13.99/mo · Jan 2024 – Jun 2026 · paid $390"), plus price-change history
 - **Shared subscriptions**: who you share with, and whether you split the cost, pay for everyone (shows what you're owed) or someone else pays. Totals can count only your share
 - **Cloud sync** (optional): sign in with an emailed 6-digit code (or Google on the web) and your data syncs between the phone app and the website. Supabase with row-level security; newest-edit-wins merge with delete tombstones
-- **Smart add**: import a CSV (free), or let Claude read a screenshot or pasted billing email and list the subscriptions for you to confirm (Plus)
+- **Smart add**: import a CSV (free), or paste a billing email and Claude lists the subscriptions for you to confirm (Plus)
 - **Monthly check-in**: "Still using it?" (often / sometimes / not at all). Unused subscriptions show up under **Ways to save** with your "why I have it" note
 - **Ways to save**: cancel candidates, savings from switching to an annual plan, and alerts for price rises in the last 12 months
 - **Service logos** for 29 popular services (simple-icons), with coloured initials as the fallback
@@ -55,7 +55,7 @@ app/                 screens (Expo Router)
   (tabs)/            Subscriptions, Insights, Budget, Settings
   edit.tsx           add/edit form + service picker
   subscription/[id]  detail (settle-up, price history)
-  smart-add.tsx      CSV / screenshot / email import
+  smart-add.tsx      CSV / pasted-email import
   check-in.tsx       monthly usage check-in
 src/lib/             pure logic: dates, billing maths, currency, sync merge, CSV, insights (unit tested)
 src/services/        platform code: notifications, ads, purchases, files, sync, smart add (*.web.ts = web version)

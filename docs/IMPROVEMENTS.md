@@ -2,7 +2,7 @@
 
 ## Shipped in v1.1
 1. ✅ Cloud sync between phone and web (Supabase, email code or Google sign-in)
-2. ✅ Smart add: CSV import, plus screenshot/email reading with Claude
+2. ✅ Smart add: CSV import, plus pasted-email reading with Claude (screenshot reading removed to keep costs down)
 3. ✅ "Still using it?" monthly check-ins feeding cancel suggestions
 4. ✅ SubTrack Plus one-off purchase (no ads + smart add)
 5. ✅ Service logos and an Android home-screen widget

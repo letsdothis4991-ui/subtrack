@@ -99,7 +99,7 @@ Needs the uploaded build from step 9 (it declares billing).
   |---|---|---|
   | Email address | Yes (optional) | Account management; not shared |
   | Other user-generated content (your subscriptions) | Yes (optional, when syncing) | App functionality; not shared |
-  | Photos (smart-add screenshots) | Yes (optional) | App functionality; **processed ephemerally**; shared with a service provider (Anthropic) |
+  | Other user-generated content (text pasted into smart add) | Yes (optional) | App functionality; **processed ephemerally**; shared with a service provider (Anthropic) |
   | Device or other IDs | Yes | Advertising, via AdMob; shared with Google |
   | App interactions / diagnostics | Yes | Via AdMob for ads and analytics |
   | Approximate location | Yes | From IP, via AdMob |

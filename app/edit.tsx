@@ -120,7 +120,7 @@ export default function EditSubscription() {
             <View style={{ flex: 1 }}>
               <T>Smart add</T>
               <T v="small" faint>
-                From a screenshot, an email or a CSV file
+                From a billing email or a CSV file
               </T>
             </View>
             <Icon name="chevronRight" size={18} color={t.textFaint} />

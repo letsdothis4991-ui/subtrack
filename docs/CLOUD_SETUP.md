@@ -1,6 +1,6 @@
 # Cloud setup: sync and smart add (≈20 minutes)
 
-Sync and smart add run on **Supabase** (free tier is plenty to start) and the **Claude API**. Without this setup the app still works fully offline; the Sync section and smart add's screenshot/email modes are simply hidden (CSV import still works).
+Sync and smart add run on **Supabase** (free tier is plenty to start) and the **Claude API**. Without this setup the app still works fully offline; the Sync section and smart add's email mode are simply hidden (CSV import still works).
 
 ## 1. Create the Supabase project
 1. Sign up at https://supabase.com → **New project**. Pick a region near your users and save the database password somewhere safe.
@@ -30,7 +30,7 @@ supabase secrets set ANTHROPIC_API_KEY=<your Claude API key>
 supabase functions deploy extract-subscriptions
 supabase functions deploy delete-account
 ```
-Get a Claude API key at https://console.anthropic.com (add a payment method and set a monthly spend limit). Smart add uses Claude Opus 5.5 at low effort; one screenshot is typically a fraction of a cent to a couple of cents. Each user is capped at 50 requests per 30 days (`MONTHLY_LIMIT` in the function).
+Get a Claude API key at https://console.anthropic.com (add a payment method and set a monthly spend limit). Smart add uses Claude Opus 5.5 at low effort on pasted text only, typically around a cent per email. Each user is capped at 50 requests per 30 days (`MONTHLY_LIMIT` in the function).
 
 ## 6. Give the app the keys
 GitHub → your repo → **Settings → Secrets and variables → Actions → New repository secret**:

@@ -106,7 +106,7 @@ export function PlusSection() {
         </View>
         {[
           'No ads',
-          'Smart add: read subscriptions from screenshots and emails',
+          'Smart add: paste a billing email and SubTrack adds the subscriptions',
           'Supports an independent, private app',
         ].map((line) => (
           <View key={line} style={{ flexDirection: 'row', gap: space.sm }}>

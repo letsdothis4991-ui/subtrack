@@ -33,7 +33,7 @@ Researched October 2026. Many "best of" lists are written by app vendors, so the
 
 ## Gaps closed in v1.1
 
-- Automatic detection: smart add reads screenshots and billing emails (like ReSubs) without bank access
+- Automatic detection: smart add reads pasted billing emails (like ReSubs) without bank access
 - Cloud sync between phone and web (like Tilla and Rocket Money)
 - Service logos and a home-screen widget
 - Still to come: iOS release, web push reminders

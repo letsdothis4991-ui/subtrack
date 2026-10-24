@@ -1,4 +1,4 @@
-// Smart add: reads a screenshot or pasted email/text and returns the subscriptions it mentions.
+// Smart add: reads a pasted billing email or text and returns the subscriptions it mentions.
 // Requires a signed-in SubTrack Plus user. Secrets: ANTHROPIC_API_KEY (set with `supabase secrets set`).
 import Anthropic from 'npm:@anthropic-ai/sdk@1.3.0';
 import { betaZodOutputFormat } from 'npm:@anthropic-ai/sdk@1.3.0/helpers/beta/zod';
@@ -8,7 +8,6 @@ import { cors, json } from '../_shared/cors.ts';
 
 const MONTHLY_LIMIT = 50;
 const MAX_TEXT = 60_000;
-const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'] as const;
 
 const Extracted = z.object({
   subscriptions: z.array(
@@ -25,7 +24,7 @@ const Extracted = z.object({
   ),
 });
 
-const SYSTEM = `You extract recurring subscriptions from receipts, billing emails, bank or app-store screenshots, and pasted text.
+const SYSTEM = `You extract recurring subscriptions from receipts, billing emails, bank statements and other pasted text.
 Only include recurring charges (subscriptions, memberships, plans). Skip one-off purchases, refunds, and totals.
 If the same subscription appears several times, return it once with the latest price and the next upcoming renewal.
 Work out the next renewal from the last charge date and the billing cycle when it isn't stated; use null when you can't tell.
@@ -55,29 +54,22 @@ Deno.serve(async (req) => {
   const { count } = await admin.from('ai_usage').select('id', { count: 'exact', head: true }).eq('user_id', user.id).gte('used_at', since);
   if ((count ?? 0) >= MONTHLY_LIMIT) return json({ error: `Smart add limit reached (${MONTHLY_LIMIT} per 30 days).` }, 429);
 
-  let body: { text?: string; image?: { data: string; mediaType: string }; today?: string; baseCurrency?: string };
+  let body: { text?: string; today?: string; baseCurrency?: string };
   try {
     body = await req.json();
   } catch {
     return json({ error: 'Invalid JSON' }, 400);
   }
   const text = (body.text ?? '').slice(0, MAX_TEXT);
-  const image = body.image && (IMAGE_TYPES as readonly string[]).includes(body.image.mediaType) ? body.image : null;
-  if (!text.trim() && !image) return json({ error: 'Send text or an image.' }, 400);
+  if (!text.trim()) return json({ error: 'Paste some text first.' }, 400);
 
-  const content: Anthropic.Beta.BetaContentBlockParam[] = [];
-  if (image) {
-    content.push({
-      type: 'image',
-      source: { type: 'base64', media_type: image.mediaType as (typeof IMAGE_TYPES)[number], data: image.data },
-    });
-  }
-  content.push({
-    type: 'text',
-    text: `Today is ${body.today ?? new Date().toISOString().slice(0, 10)}. My base currency is ${body.baseCurrency ?? 'USD'}.\n\n${
-      text.trim() ? `<document>\n${text}\n</document>\n\n` : ''
-    }List the subscriptions ${image ? 'in this screenshot' : 'in this document'}.`,
-  });
+  const prompt = `Today is ${body.today ?? new Date().toISOString().slice(0, 10)}. My base currency is ${body.baseCurrency ?? 'USD'}.
+
+<document>
+${text}
+</document>
+
+List the subscriptions in this document.`;
 
   try {
     const response = await anthropic.beta.messages.parse({
@@ -88,10 +80,10 @@ Deno.serve(async (req) => {
       fallbacks: 'default',
       system: SYSTEM,
       output_config: { effort: 'low', format: betaZodOutputFormat(Extracted) },
-      messages: [{ role: 'user', content }],
+      messages: [{ role: 'user', content: prompt }],
     });
     await admin.from('ai_usage').insert({ user_id: user.id });
-    if (response.stop_reason === 'refusal') return json({ error: "Couldn't read that one. Try a different screenshot or paste the text." }, 422);
+    if (response.stop_reason === 'refusal') return json({ error: "Couldn't read that one. Try pasting a different email." }, 422);
     return json({ subscriptions: response.parsed_output?.subscriptions ?? [] });
   } catch (e) {
     if (e instanceof Anthropic.RateLimitError) return json({ error: 'Busy right now. Try again in a minute.' }, 503);
