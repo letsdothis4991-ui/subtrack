@@ -14,7 +14,7 @@ import { AccountSection, PlusSection } from '../../src/components/account';
 import { useStore } from '../../src/store';
 import { space, useTheme } from '../../src/theme';
 
-const PRIVACY_URL = process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://letsdothis4991-ui.github.io/subtrack/privacy.html';
+const PRIVACY_URL = process.env.EXPO_PUBLIC_PRIVACY_URL || 'https://letsdothis4991-ui.github.io/subtrack/privacy.html';
 
 export default function SettingsScreen() {
   const t = useTheme();
