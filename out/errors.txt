@@ -1,0 +1,72 @@
+10-29 08:24:34.065  3233  3233 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:24:34.074  3233  3233 I AndroidRuntime: Using default boot image
+10-29 08:24:34.074  3233  3233 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:24:34.343  3233  3233 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+10-29 08:24:34.563  3233  3233 I AndroidRuntime: VM exiting with result code 0.
+10-29 08:24:55.327  4671  4671 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:24:55.352  4671  4671 I AndroidRuntime: Using default boot image
+10-29 08:24:55.352  4671  4671 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:24:55.593  4671  4671 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:24:56.657  4671  4671 D AndroidRuntime: Shutting down VM
+10-29 08:25:02.953  4972  4972 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:02.964  4972  4972 I AndroidRuntime: Using default boot image
+10-29 08:25:02.964  4972  4972 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:03.283  4972  4972 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:05.165  4972  4972 D AndroidRuntime: Shutting down VM
+10-29 08:25:10.978  5274  5274 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:10.993  5274  5274 I AndroidRuntime: Using default boot image
+10-29 08:25:10.994  5274  5274 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:11.459  5274  5274 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:13.345  5274  5274 D AndroidRuntime: Shutting down VM
+10-29 08:25:17.749  5453  5453 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:17.760  5453  5453 I AndroidRuntime: Using default boot image
+10-29 08:25:17.760  5453  5453 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:17.982  5453  5453 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:19.339  5453  5453 D AndroidRuntime: Shutting down VM
+10-29 08:25:23.672  5631  5631 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:23.687  5631  5631 I AndroidRuntime: Using default boot image
+10-29 08:25:23.687  5631  5631 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:23.955  5631  5631 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:25.667  5631  5631 D AndroidRuntime: Shutting down VM
+10-29 08:25:29.946  6020  6020 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:29.954  6020  6020 I AndroidRuntime: Using default boot image
+10-29 08:25:29.954  6020  6020 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:30.053  6020  6020 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:31.157  6020  6020 D AndroidRuntime: Shutting down VM
+10-29 08:25:35.322  6176  6176 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:35.326  6176  6176 I AndroidRuntime: Using default boot image
+10-29 08:25:35.326  6176  6176 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:35.492  3321  3502 E ReactNativeJS: '[Expo-IAP]', 'Error fetching available purchases:', { [[expo-iap]: PurchaseError: Store service is not connected]
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   name: '[expo-iap]: PurchaseError',
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   responseCode: undefined,
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   debugMessage: undefined,
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   code: 'service-disconnected',
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   productId: undefined,
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   productIds: undefined,
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   productType: undefined,
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   isEmptyProductList: undefined,
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   subResponseCodeAndroid: undefined,
+10-29 08:25:35.492  3321  3502 E ReactNativeJS:   platform: 'android' }
+10-29 08:25:35.495  6176  6176 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:35.505  3321  3502 E ReactNativeJS: '[Expo-IAP]', 'Error fetching products:', { [[expo-iap]: PurchaseError: Failed to query product]
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   name: '[expo-iap]: PurchaseError',
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   responseCode: -1,
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   debugMessage: 'Service connection is disconnected.',
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   code: 'query-product',
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   productId: undefined,
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   productIds: [ 'subtrack_plus' ],
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   productType: 'inapp',
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   isEmptyProductList: true,
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   subResponseCodeAndroid: undefined,
+10-29 08:25:35.505  3321  3502 E ReactNativeJS:   platform: 'android' }
+10-29 08:25:36.588  6176  6176 D AndroidRuntime: Shutting down VM
+10-29 08:25:38.960  6199  6199 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:38.965  6199  6199 I AndroidRuntime: Using default boot image
+10-29 08:25:38.965  6199  6199 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:39.100  6199  6199 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:40.270  6199  6199 D AndroidRuntime: Shutting down VM
+10-29 08:25:42.640  6278  6278 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-29 08:25:42.646  6278  6278 I AndroidRuntime: Using default boot image
+10-29 08:25:42.646  6278  6278 I AndroidRuntime: Leaving lock profiling enabled
+10-29 08:25:42.817  6278  6278 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-29 08:25:43.994  6278  6278 D AndroidRuntime: Shutting down VM

@@ -1,0 +1,19 @@
+APK: apk/app-release.apk
+install: ok
+01-launch: running
+tapped 'Explore with sample data'
+02-sample: running
+gym row bounds: 68 248 187 269
+swipe-archive: OK (Past · 3)
+03-after-swipe: running
+tapped 'Insights'
+04-insights: running
+tapped 'Budget'
+05-budget: running
+tapped 'Settings'
+06-settings: running
+tapped 'Send a test reminder'
+07-test-reminder: running
+test-reminder: posted
+reminder channel: mImportance=4 (4 = high, pops up on screen)
+PROCESS: running
