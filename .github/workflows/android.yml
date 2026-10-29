@@ -45,10 +45,16 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         if: env.KEYSTORE_B64 != ''
         run: |
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          # Gradle already signed the bundle with the debug key. Play rejects a bundle with two
+          # signatures, so strip that one before signing with the upload key.
+          zip -q -d "$AAB" 'META-INF/*.SF' 'META-INF/*.RSA' 'META-INF/*.DSA' 'META-INF/*.EC' 'META-INF/MANIFEST.MF' || [ $? -eq 12 ]
           echo "$KEYSTORE_B64" | base64 -d > upload.jks
-          jarsigner -keystore upload.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
-            android/app/build/outputs/bundle/release/app-release.aab "$KEY_ALIAS"
+          jarsigner -keystore upload.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" "$AAB" "$KEY_ALIAS"
           rm upload.jks
+          signers=$(keytool -printcert -jarfile "$AAB" | grep -c '^Signer #')
+          echo "Bundle signers: $signers"
+          [ "$signers" -eq 1 ] || { echo "::error::Expected exactly 1 signer, found $signers"; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: subtrack-apk
