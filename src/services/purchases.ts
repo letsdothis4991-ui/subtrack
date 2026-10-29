@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
-import { AppState, Linking, Platform } from 'react-native';
-import { finishTransaction, getAvailablePurchases, initConnection, useIAP } from 'expo-iap';
+import { Alert, AppState, Linking, Platform } from 'react-native';
+import {
+  finishTransaction,
+  getAvailablePurchases,
+  getUserFriendlyErrorMessage,
+  initConnection,
+  isUserCancelledError,
+  useIAP,
+} from 'expo-iap';
 import { useStore } from '../store';
 
 /**
@@ -10,6 +17,18 @@ import { useStore } from '../store';
 export const PLUS_SKU = 'subtrack_plus';
 
 export const purchasesSupported = Platform.OS === 'android' || Platform.OS === 'ios';
+
+let lastErrorAt = 0;
+
+/** Tells the user why a purchase didn't go through, instead of failing silently. Cancelling isn't an error. */
+function reportPurchaseError(e: unknown) {
+  if (isUserCancelledError(e)) return;
+  // The same failure can arrive as both a rejected promise and an error event.
+  if (Date.now() - lastErrorAt < 2000) return;
+  lastErrorAt = Date.now();
+  const code = (e as { code?: string })?.code;
+  Alert.alert("Purchase didn't go through", `${getUserFriendlyErrorMessage(e as Error)}${code ? `\n\n(${code})` : ''}`);
+}
 
 export function usePlusPurchase() {
   const updateSettings = useStore((s) => s.updateSettings);
@@ -21,6 +40,7 @@ export function usePlusPurchase() {
           await finishTransaction({ purchase, isConsumable: false });
         }
       },
+      onPurchaseError: reportPurchaseError,
     });
 
   useEffect(() => {
@@ -43,7 +63,7 @@ export function usePlusPurchase() {
       requestPurchase({
         type: 'in-app',
         request: { google: { skus: [PLUS_SKU] }, apple: { sku: PLUS_SKU } },
-      }).catch(() => {}),
+      }).catch(reportPurchaseError),
     restore: () => getAvailablePurchases().catch(() => {}),
   };
 }
